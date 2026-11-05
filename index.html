@@ -1,0 +1,2992 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Dimas Saputra — Creator AI, Marketer & Web Dev</title>
+  <meta name="description" content="Biolink resmi & katalog tools AI pilihan untuk creator, affiliator, seller & UMKM." />
+  <meta name="theme-color" content="#070B12" />
+
+  <!-- IMPLEMENTASI PWA 1 FILE: Manifest sebagai Data URI -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Biolink Creator Storefront","short_name":"BiolinkAI","start_url":".","display":"standalone","background_color":"#070B12","theme_color":"#070B12","description":"Biolink & Katalog Produk Digital Creator","icons":[{"src":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=192&h=192&fit=crop&crop=faces","sizes":"192x192","type":"image/jpeg"},{"src":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=512&h=512&fit=crop&crop=faces","sizes":"512x512","type":"image/jpeg"}]}' />
+
+  <!-- Google Fonts: Instrument Serif (Editorial Italic) & Plus Jakarta Sans (UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Instrument Serif"', 'serif'],
+          },
+          colors: {
+            canvas: '#070B12',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Full-Page Cover untuk Menutupi Elemen Bawaan Blogger Tanpa Edit XML */
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background-color: #070B12 !important;
+      color: #FFFFFF;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #biolink-fullscreen-root {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 999999;
+      background-color: #070B12;
+      scroll-behavior: smooth;
+    }
+
+    /* Tipografi Editorial Serif sesuai referensi */
+    .font-editorial {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+    }
+
+    /* Glassmorphism Tokens */
+    .glass-dark {
+      background: rgba(18, 22, 28, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .glass-emerald {
+      background: linear-gradient(135deg, rgba(16, 42, 32, 0.78) 0%, rgba(18, 26, 24, 0.78) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(74, 222, 128, 0.24);
+    }
+
+    .glass-product {
+      background: linear-gradient(180deg, rgba(32, 35, 30, 0.72) 0%, rgba(14, 17, 22, 0.85) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .glass-panel {
+      background: rgba(15, 20, 28, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Grid Halus di Belakang Header seperti Referensi */
+    .hero-grid-overlay {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      mask-image: radial-gradient(circle at 50% 18%, black 10%, transparent 70%);
+      -webkit-mask-image: radial-gradient(circle at 50% 18%, black 10%, transparent 70%);
+    }
+
+    /* Responsif Navigasi Admin (Wajib Media Queries) */
+    .admin-sidebar {
+      display: flex;
+      flex-direction: column;
+      width: 265px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 40;
+    }
+
+    .admin-main-content {
+      margin-left: 265px;
+      min-height: 100vh;
+      padding-bottom: 3rem;
+    }
+
+    .admin-bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        display: none !important;
+      }
+      .admin-main-content {
+        margin-left: 0 !important;
+        padding-bottom: 7rem !important;
+      }
+      .admin-bottom-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 12px;
+        left: 10px;
+        right: 10px;
+        z-index: 50;
+      }
+    }
+
+    /* Custom Scrollbar */
+    #biolink-fullscreen-root::-webkit-scrollbar,
+    #phone-preview-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    #biolink-fullscreen-root::-webkit-scrollbar-track,
+    #phone-preview-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #biolink-fullscreen-root::-webkit-scrollbar-thumb,
+    #phone-preview-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body>
+  <div id="biolink-fullscreen-root">
+    <!-- BACKGROUND LAYER (Botanical Dark + Ambient Glows) -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <!-- Gambar Latar Tanaman/Bunga Malam -->
+      <div id="bg-wallpaper" class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 scale-105"
+           style="background-image: url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=85');">
+      </div>
+      <!-- Dark Vignette & Botanical Depth Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-b from-[#070B12]/80 via-[#070B12]/55 to-[#070B12]/90"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_15%,#070B12_90%)]"></div>
+      <!-- Ambient Blue Glow Top-Left & Purple Glow Right -->
+      <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-600/20 blur-[110px]"></div>
+      <div class="absolute top-1/3 -right-28 w-96 h-96 rounded-full bg-purple-600/20 blur-[120px]"></div>
+      <!-- Subtle Header Grid -->
+      <div class="absolute inset-0 hero-grid-overlay"></div>
+    </div>
+
+    <!-- TOP FLOATING BAR (Indikator Mode & Tombol Kembali ke Biolink saat Admin Aktif) -->
+    <div id="top-floating-controls" class="fixed top-3.5 right-3.5 z-50 flex items-center gap-2">
+      <span id="preview-mode-badge" class="hidden px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30 backdrop-blur-md">
+        Mode Pratinjau
+      </span>
+      <button id="btn-toggle-view" onclick="window.app.toggleAdminView()" class="hidden px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white text-zinc-950 shadow-lg hover:bg-zinc-200 transition-all items-center gap-1.5">
+        <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+        <span id="btn-toggle-view-text">Dashboard Admin</span>
+      </button>
+    </div>
+
+    <!-- ==========================================
+         VIEW 1: HALAMAN BIOLINK PUBLIK (MOBILE-FIRST)
+         ========================================== -->
+    <main id="public-biolink-view" class="relative z-10 min-h-screen flex flex-col justify-between px-4 pt-10 pb-12 max-w-[440px] mx-auto">
+      <div class="w-full">
+        <!-- 1. PROFILE HEADER SECTION -->
+        <header class="flex flex-col items-center text-center">
+          <!-- Avatar dengan Ring Gradasi Indigo-Purple -->
+          <div class="relative mb-4 group">
+            <div class="absolute -inset-1 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300"></div>
+            <div class="relative w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-indigo-400 via-purple-500 to-blue-400 shadow-xl">
+              <div class="w-full h-full rounded-full overflow-hidden bg-indigo-950">
+                <img id="pub-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces" alt="Profile Avatar" class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Pill (Open + Green Dot + Terima project & kolaborasi) -->
+          <div class="inline-flex items-center gap-2 rounded-full bg-zinc-950/85 border border-white/15 p-1 pr-3.5 mb-3 shadow-lg backdrop-blur-md">
+            <span id="pub-status-badge" class="bg-white text-zinc-950 text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-tight">
+              Open
+            </span>
+            <span id="pub-status-dot" class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]"></span>
+            <span id="pub-status-text" class="text-[11px] font-medium text-zinc-200">
+              Terima project & kolaborasi
+            </span>
+          </div>
+
+          <!-- Nama Utama (Instrument Serif Italic) -->
+          <h1 id="pub-fullname" class="font-editorial text-4xl sm:text-[42px] text-white tracking-normal leading-tight mb-1.5">
+            Dimas Saputra
+          </h1>
+
+          <!-- Role Tagline (Uppercase Wide Tracking) -->
+          <p id="pub-tagline" class="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 mb-4">
+            CREATOR AI · MARKETER · WEB DEV
+          </p>
+
+          <!-- Bio Text -->
+          <p id="pub-bio" class="text-xs sm:text-[13px] text-zinc-300/90 leading-relaxed max-w-[350px] mb-3.5">
+            Hi, gue Dimas 👋 Lagi ngembangin <span class="font-bold text-white underline decoration-white/60 underline-offset-2">@ruangcipta.ai</span>. Bantu creator, affiliator, seller & UMKM kerja lebih simpel pakai AI.
+          </p>
+
+          <!-- CTA Hint (Mulai di sini) -->
+          <div class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-200 mb-4">
+            <span class="inline-flex items-center justify-center w-4 h-4 rounded bg-blue-500/90 text-white text-[10px] shadow-sm">⬇</span>
+            <span id="pub-cta-hint">Mulai di sini</span>
+          </div>
+        </header>
+
+        <!-- 2. QUICK LINKS SECTION -->
+        <section id="pub-links-container" class="space-y-3 mb-8">
+          <!-- Dirender secara dinamis oleh JavaScript -->
+        </section>
+
+        <!-- 3. DIGITAL PRODUCTS / TOOLS SHOWCASE SECTION -->
+        <section id="pub-products-section" class="mb-8">
+          <div class="flex items-center justify-center mb-3.5">
+            <h2 id="pub-product-section-title" class="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 text-center">
+              TOOLS AI YANG BANTU KERJAAN GUE
+            </h2>
+          </div>
+
+          <div id="pub-products-container" class="space-y-3.5">
+            <!-- Dirender secara dinamis oleh JavaScript -->
+          </div>
+        </section>
+
+        <!-- 4. MEDIA SOSIAL SECTION -->
+        <section id="pub-socials-section" class="mb-8">
+          <div class="flex items-center justify-center mb-3.5">
+            <h2 id="pub-social-section-title" class="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 text-center">
+              JEJARING & MEDIA SOSIAL RESMI
+            </h2>
+          </div>
+
+          <div id="pub-socials-container" class="grid grid-cols-2 gap-2.5">
+            <!-- Dirender secara dinamis oleh JavaScript -->
+          </div>
+        </section>
+
+        <!-- 5. KONTAK LAINNYA SECTION -->
+        <section id="pub-contacts-section" class="mb-4">
+          <div class="flex items-center justify-center mb-3.5">
+            <h2 id="pub-contact-section-title" class="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 text-center">
+              KONTAK LAINNYA & KOLABORASI
+            </h2>
+          </div>
+
+          <div id="pub-contacts-container" class="space-y-2.5">
+            <!-- Dirender secara dinamis oleh JavaScript -->
+          </div>
+        </section>
+      </div>
+
+      <!-- FOOTER & TOMBOL LOGIN ADMIN TUNGGAL -->
+      <footer class="mt-10 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-500">
+        <span>© <span id="footer-year"></span> <span id="footer-owner-name">Dimas Saputra</span></span>
+        <button onclick="window.app.openAdminAuthModal()" class="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors py-1 px-2 rounded-lg hover:bg-white/5" title="Login Admin Utama">
+          <i data-lucide="lock" class="w-3 h-3"></i>
+          <span>Admin</span>
+        </button>
+      </footer>
+    </main>
+
+    <!-- ==========================================
+         VIEW 2: DASHBOARD ADMIN SINGLE-USER
+         (Fixed Left Sidebar di Desktop, Bottom Nav di Mobile)
+         ========================================== -->
+    <div id="admin-dashboard-view" class="relative z-10 hidden">
+      <!-- DESKTOP FIXED SIDEBAR -->
+      <aside class="admin-sidebar glass-panel border-r border-white/10 p-5 justify-between">
+        <div>
+          <!-- Brand Header -->
+          <div class="flex items-center gap-3 pb-5 mb-5 border-b border-white/10">
+            <img id="admin-sidebar-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=faces" alt="Admin" class="w-10 h-10 rounded-full object-cover border border-indigo-400/50" />
+            <div class="min-w-0">
+              <h2 id="admin-sidebar-name" class="text-sm font-bold text-white truncate">Dimas Saputra</h2>
+              <p class="text-[11px] text-emerald-400 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Admin Utama
+              </p>
+            </div>
+          </div>
+
+          <!-- Menu Navigasi Desktop (6 Menu) -->
+          <nav class="space-y-1.5">
+            <button onclick="window.app.switchAdminTab('overview')" data-tab="overview" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-white text-zinc-950">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+              <span>Ikhtisar & Analitik</span>
+            </button>
+            <button onclick="window.app.switchAdminTab('profile')" data-tab="profile" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:bg-white/10 transition-all">
+              <i data-lucide="user-cog" class="w-4 h-4"></i>
+              <span>Profil & Tampilan</span>
+            </button>
+            <button onclick="window.app.switchAdminTab('links')" data-tab="links" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:bg-white/10 transition-all">
+              <i data-lucide="link-2" class="w-4 h-4"></i>
+              <span>Kelola Tautan Cepat</span>
+            </button>
+            <button onclick="window.app.switchAdminTab('products')" data-tab="products" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:bg-white/10 transition-all">
+              <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+              <span>Kelola Produk / Tools</span>
+            </button>
+            <button onclick="window.app.switchAdminTab('socials')" data-tab="socials" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:bg-white/10 transition-all">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>Media Sosial</span>
+            </button>
+            <button onclick="window.app.switchAdminTab('contacts')" data-tab="contacts" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-300 hover:bg-white/10 transition-all">
+              <i data-lucide="contact-2" class="w-4 h-4"></i>
+              <span>Kontak Lainnya</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Aksi Bawah Sidebar -->
+        <div class="space-y-2 pt-4 border-t border-white/10">
+          <button onclick="window.app.toggleAdminView(false)" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/15 text-white transition-all">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>Lihat Halaman Biolink</span>
+          </button>
+          <button onclick="window.app.handleLogout()" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/20 transition-all">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>Keluar Sesi Admin</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- NAVIGASI MOBILE ADMIN -->
+      <nav class="admin-bottom-nav glass-panel rounded-2xl p-1.5 border border-white/15 shadow-2xl justify-around items-center overflow-x-auto">
+        <button onclick="window.app.switchAdminTab('overview')" data-tab="overview" class="admin-nav-btn flex-1 min-w-[52px] flex flex-col items-center py-2 rounded-xl text-[10px] font-semibold bg-white text-zinc-950">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 mb-0.5"></i>
+          <span>Analitik</span>
+        </button>
+        <button onclick="window.app.switchAdminTab('profile')" data-tab="profile" class="admin-nav-btn flex-1 min-w-[52px] flex flex-col items-center py-2 rounded-xl text-[10px] font-semibold text-zinc-300">
+          <i data-lucide="user-cog" class="w-4 h-4 mb-0.5"></i>
+          <span>Tampilan</span>
+        </button>
+        <button onclick="window.app.switchAdminTab('links')" data-tab="links" class="admin-nav-btn flex-1 min-w-[52px] flex flex-col items-center py-2 rounded-xl text-[10px] font-semibold text-zinc-300">
+          <i data-lucide="link-2" class="w-4 h-4 mb-0.5"></i>
+          <span>Tautan</span>
+        </button>
+        <button onclick="window.app.switchAdminTab('products')" data-tab="products" class="admin-nav-btn flex-1 min-w-[52px] flex flex-col items-center py-2 rounded-xl text-[10px] font-semibold text-zinc-300">
+          <i data-lucide="shopping-bag" class="w-4 h-4 mb-0.5"></i>
+          <span>Produk</span>
+        </button>
+        <button onclick="window.app.switchAdminTab('socials')" data-tab="socials" class="admin-nav-btn flex-1 min-w-[52px] flex flex-col items-center py-2 rounded-xl text-[10px] font-semibold text-zinc-300">
+          <i data-lucide="share-2" class="w-4 h-4 mb-0.5"></i>
+          <span>Sosmed</span>
+        </button>
+        <button onclick="window.app.switchAdminTab('contacts')" data-tab="contacts" class="admin-nav-btn flex-1 min-w-[52px] flex flex-col items-center py-2 rounded-xl text-[10px] font-semibold text-zinc-300">
+          <i data-lucide="contact-2" class="w-4 h-4 mb-0.5"></i>
+          <span>Kontak</span>
+        </button>
+      </nav>
+
+      <!-- AREA KONTEN UTAMA ADMIN + LIVE MOBILE PREVIEW DI SISI KANAN -->
+      <div class="admin-main-content p-4 sm:p-6 lg:p-8 max-w-[1440px]">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+          
+          <!-- KOLOM KIRI: PANEL PENGATURAN & CRUD (7 KOLOM DI DESKTOP XL) -->
+          <div class="xl:col-span-7 2xl:col-span-8 space-y-6 min-w-0">
+            <!-- TAB 1: IKHTISAR & ANALITIK -->
+            <section id="admin-tab-overview" class="admin-tab-pane space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-white">Ikhtisar & Analitik Biolink</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Pantau performa klik tautan, produk digital, media sosial, dan kontak Anda.</p>
+                </div>
+                <button onclick="window.app.confirmResetAnalytics()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/25 inline-flex items-center gap-1.5 transition-all">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>Reset Statistik Klik</span>
+                </button>
+              </div>
+
+              <!-- Kartu Metrik -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                <div class="glass-panel rounded-2xl p-4">
+                  <div class="flex items-center justify-between text-zinc-400 mb-2">
+                    <span class="text-xs font-medium">Total Klik Tautan</span>
+                    <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-indigo-400"></i>
+                  </div>
+                  <p id="stat-total-link-clicks" class="font-editorial text-3xl text-white">0</p>
+                  <p class="text-[11px] text-zinc-500 mt-1">Akumulasi tombol utama</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-4">
+                  <div class="flex items-center justify-between text-zinc-400 mb-2">
+                    <span class="text-xs font-medium">Total Klik Produk</span>
+                    <i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-400"></i>
+                  </div>
+                  <p id="stat-total-product-clicks" class="font-editorial text-3xl text-white">0</p>
+                  <p class="text-[11px] text-zinc-500 mt-1">Minat katalog produk AI</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-4">
+                  <div class="flex items-center justify-between text-zinc-400 mb-2">
+                    <span class="text-xs font-medium">Klik Media Sosial</span>
+                    <i data-lucide="share-2" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <p id="stat-total-social-clicks" class="font-editorial text-3xl text-white">0</p>
+                  <p class="text-[11px] text-zinc-500 mt-1">Kunjungan profil sosmed</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-4">
+                  <div class="flex items-center justify-between text-zinc-400 mb-2">
+                    <span class="text-xs font-medium">Interaksi Kontak</span>
+                    <i data-lucide="phone-call" class="w-4 h-4 text-amber-400"></i>
+                  </div>
+                  <p id="stat-total-contact-clicks" class="font-editorial text-3xl text-white">0</p>
+                  <p class="text-[11px] text-zinc-500 mt-1">Klik & salin kontak</p>
+                </div>
+              </div>
+
+              <!-- Peringkat Performa Tautan & Produk -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="glass-panel rounded-2xl p-5">
+                  <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Performa Tautan Cepat</span>
+                  </h3>
+                  <div id="overview-links-rank" class="space-y-2.5"></div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-5">
+                  <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i>
+                    <span>Produk Paling Diminati</span>
+                  </h3>
+                  <div id="overview-products-rank" class="space-y-2.5"></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- TAB 2: PROFIL & TAMPILAN (DILENGKAPI UPLOAD GAMBAR PROFIL & BACKGROUND) -->
+            <section id="admin-tab-profile" class="admin-tab-pane hidden space-y-6">
+              <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-white">Pengaturan Profil & Tampilan</h2>
+                <p class="text-xs text-zinc-400 mt-0.5">Unggah foto profil dan gambar background langsung dari perangkat Anda, atau sesuaikan teks bio dan judul seksi.</p>
+              </div>
+
+              <form id="form-profile" onsubmit="window.app.saveProfile(event)" class="glass-panel rounded-3xl p-5 sm:p-6 space-y-6">
+                <!-- BAGIAN UPLOAD GAMBAR PROFIL & BACKGROUND -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 pb-5 border-b border-white/10">
+                  <!-- Card Upload Foto Profil -->
+                  <div class="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                      <label class="text-xs font-bold text-white flex items-center gap-1.5">
+                        <i data-lucide="camera" class="w-4 h-4 text-indigo-400"></i>
+                        <span>Foto Profil (Avatar 1:1)</span>
+                      </label>
+                      <span id="avatar-upload-status" class="text-[10px] text-emerald-400 hidden">Siap disimpan</span>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                      <div class="relative w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 to-purple-500 shrink-0">
+                        <img id="preview-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces" alt="Preview Avatar" class="w-full h-full rounded-full object-cover bg-zinc-900" />
+                      </div>
+                      <div class="flex-1 space-y-2">
+                        <input type="file" id="file-avatar-upload" accept="image/*" class="hidden" onchange="window.app.handleImageUpload(event, 'avatar')" />
+                        <div class="flex flex-wrap gap-2">
+                          <button type="button" onclick="document.getElementById('file-avatar-upload').click()" class="px-3.5 py-2 rounded-xl bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-bold inline-flex items-center gap-1.5 shadow">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                            <span>Upload File Foto</span>
+                          </button>
+                        </div>
+                        <p class="text-[10px] text-zinc-400">Mendukung JPG, PNG, WebP (Otomatis dikompresi & dioptimalkan).</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-[11px] font-medium text-zinc-400 mb-1">Atau gunakan URL Gambar Avatar:</label>
+                      <input type="url" id="inp-avatar-url" required oninput="document.getElementById('preview-avatar-img').src = this.value" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40" />
+                    </div>
+                  </div>
+
+                  <!-- Card Upload Gambar Background -->
+                  <div class="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                      <label class="text-xs font-bold text-white flex items-center gap-1.5">
+                        <i data-lucide="image" class="w-4 h-4 text-purple-400"></i>
+                        <span>Gambar Background (Wallpaper)</span>
+                      </label>
+                      <span id="bg-upload-status" class="text-[10px] text-emerald-400 hidden">Siap disimpan</span>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                      <div class="w-24 h-16 rounded-xl overflow-hidden border border-white/15 shrink-0 bg-zinc-900">
+                        <img id="preview-bg-img" src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=85" alt="Preview Background" class="w-full h-full object-cover" />
+                      </div>
+                      <div class="flex-1 space-y-2">
+                        <input type="file" id="file-bg-upload" accept="image/*" class="hidden" onchange="window.app.handleImageUpload(event, 'background')" />
+                        <button type="button" onclick="document.getElementById('file-bg-upload').click()" class="px-3.5 py-2 rounded-xl bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-bold inline-flex items-center gap-1.5 shadow">
+                          <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+                          <span>Upload File Background</span>
+                        </button>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button" onclick="window.app.setPresetBg('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=85')" class="text-[10px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-zinc-300">🌿 Dark Meadow</button>
+                          <button type="button" onclick="window.app.setPresetBg('https://images.unsplash.com/photo-1470058869958-2a77ade41c02?auto=format&fit=crop&w=1920&q=85')" class="text-[10px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-zinc-300">🍃 Jungle</button>
+                          <button type="button" onclick="window.app.setPresetBg('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1920&q=85')" class="text-[10px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-zinc-300">🌸 Floral</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-[11px] font-medium text-zinc-400 mb-1">Atau gunakan URL Gambar Background:</label>
+                      <input type="url" id="inp-bg-url" required oninput="document.getElementById('preview-bg-img').src = this.value" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- IDENTITAS & BIO -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Nama Lengkap (Font Serif Italic)</label>
+                    <input type="text" id="inp-full-name" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Tagline Profesi (Uppercase)</label>
+                    <input type="text" id="inp-role-tagline" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" placeholder="CREATOR AI · MARKETER · WEB DEV" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Deskripsi Bio (Gunakan @handle untuk teks bergaris bawah otomatis)</label>
+                  <textarea id="inp-bio-text" rows="3" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40"></textarea>
+                </div>
+
+                <!-- STATUS KOLABORASI & CTA -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-white/10">
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Status Kolaborasi</label>
+                    <select id="inp-open-collab" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40">
+                      <option value="true">Open (Aktif Menerima Project)</option>
+                      <option value="false">Closed (Sedang Penuh)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Teks Kapsul Status</label>
+                    <input type="text" id="inp-status-text" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Teks Arahan (CTA Hint)</label>
+                    <input type="text" id="inp-cta-hint" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" />
+                  </div>
+                </div>
+
+                <!-- JUDUL SEKSI HALAMAN -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-white/10">
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Judul Seksi Katalog Produk</label>
+                    <input type="text" id="inp-product-section-title" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Judul Seksi Media Sosial</label>
+                    <input type="text" id="inp-social-section-title" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Judul Seksi Kontak Lainnya</label>
+                    <input type="text" id="inp-contact-section-title" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40" />
+                  </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="px-6 py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-lg">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Simpan Perubahan Profil & Tampilan</span>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <!-- TAB 3: KELOLA TAUTAN CEPAT (LINKS CRUD) -->
+            <section id="admin-tab-links" class="admin-tab-pane hidden space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-white">Kelola Kartu Tautan Cepat</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Tambah atau atur kartu tautan utama lengkap dengan opsi upload ikon kustom.</p>
+                </div>
+                <button onclick="window.app.openLinkModal()" class="px-4 py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all inline-flex items-center gap-1.5 shadow-lg">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>Tambah Tautan Baru</span>
+                </button>
+              </div>
+
+              <div id="admin-links-list" class="space-y-3"></div>
+            </section>
+
+            <!-- TAB 4: KELOLA PRODUK / TOOLS AI (PRODUCTS CRUD) -->
+            <section id="admin-tab-products" class="admin-tab-pane hidden space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-white">Kelola Katalog Produk & Tools</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Atur etalase produk digital, harga coret, harga promo, serta deskripsi lengkap.</p>
+                </div>
+                <button onclick="window.app.openProductModal()" class="px-4 py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all inline-flex items-center gap-1.5 shadow-lg">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>Tambah Produk Baru</span>
+                </button>
+              </div>
+
+              <div id="admin-products-list" class="space-y-3.5"></div>
+            </section>
+
+            <!-- TAB 5: KELOLA MEDIA SOSIAL (SOCIALS CRUD) -->
+            <section id="admin-tab-socials" class="admin-tab-pane hidden space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-white">Kelola Section Media Sosial</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Tambahkan akun media sosial beserta ikon bawaan atau upload file logo/ikon sendiri.</p>
+                </div>
+                <button onclick="window.app.openSocialModal()" class="px-4 py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all inline-flex items-center gap-1.5 shadow-lg">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>Tambah Media Sosial</span>
+                </button>
+              </div>
+
+              <div id="admin-socials-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </section>
+
+            <!-- TAB 6: KELOLA KONTAK LAINNYA (CONTACTS CRUD) -->
+            <section id="admin-tab-contacts" class="admin-tab-pane hidden space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-white">Kelola Section Kontak Lainnya</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Atur saluran kontak bisnis lengkap dengan fitur upload file ikon kustom.</p>
+                </div>
+                <button onclick="window.app.openContactModal()" class="px-4 py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all inline-flex items-center gap-1.5 shadow-lg">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>Tambah Kontak Baru</span>
+                </button>
+              </div>
+
+              <div id="admin-contacts-list" class="space-y-3"></div>
+            </section>
+          </div>
+
+          <!-- KOLOM KANAN: LIVE HANDPHONE PREVIEW (STICKY DI SISI KANAN DASHBOARD) -->
+          <aside class="xl:col-span-5 2xl:col-span-4 xl:sticky xl:top-6 flex flex-col items-center">
+            <div class="w-full max-w-[360px] glass-panel rounded-3xl p-4 border border-white/15 shadow-2xl">
+              <!-- Header Panel Preview -->
+              <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-xs font-bold text-white tracking-wide">Live Mobile Preview</span>
+                </div>
+                <button type="button" onclick="window.app.toggleAdminView(false)" class="text-[11px] font-semibold text-indigo-300 hover:text-white inline-flex items-center gap-1 transition-colors">
+                  <span>Buka Layar Penuh</span>
+                  <i data-lucide="external-link" class="w-3 h-3"></i>
+                </button>
+              </div>
+
+              <!-- Mockup Handphone Frame -->
+              <div class="relative mx-auto w-full max-w-[328px] h-[640px] rounded-[42px] p-[9px] bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 shadow-[0_20px_50px_rgba(0,0,0,0.85)] border border-white/20">
+                <!-- Tombol Samping Handphone (Dekoratif) -->
+                <div class="absolute -left-[3px] top-24 w-[3px] h-8 bg-zinc-600 rounded-l"></div>
+                <div class="absolute -left-[3px] top-36 w-[3px] h-12 bg-zinc-600 rounded-l"></div>
+                <div class="absolute -right-[3px] top-28 w-[3px] h-14 bg-zinc-600 rounded-r"></div>
+
+                <!-- Layar Dalam Handphone -->
+                <div class="relative w-full h-full rounded-[34px] overflow-hidden bg-[#070B12] flex flex-col">
+                  <!-- Wallpaper Background di dalam Mockup HP -->
+                  <div id="phone-preview-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-500 scale-105"
+                       style="background-image: url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1000&q=80');"></div>
+                  <div class="absolute inset-0 bg-gradient-to-b from-[#070B12]/80 via-[#070B12]/55 to-[#070B12]/95"></div>
+
+                  <!-- Status Bar & Dynamic Island -->
+                  <div class="relative z-20 pt-2.5 pb-1.5 px-5 flex items-center justify-between text-[10px] font-semibold text-white/90 select-none shrink-0">
+                    <span id="phone-preview-clock">09:41</span>
+                    <div class="w-20 h-4 rounded-full bg-black border border-white/10 flex items-center justify-end pr-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-indigo-500/70"></span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <i data-lucide="wifi" class="w-3 h-3"></i>
+                      <i data-lucide="battery-charging" class="w-3.5 h-3.5"></i>
+                    </div>
+                  </div>
+
+                  <!-- Konten Scrollable Biolink di dalam Handphone -->
+                  <div id="phone-preview-scroll" class="relative z-10 flex-1 overflow-y-auto px-3.5 pt-3 pb-7 space-y-4">
+                    <!-- Dirender otomatis secara real-time oleh renderPhonePreview() -->
+                  </div>
+
+                  <!-- Home Indicator Bar -->
+                  <div class="relative z-20 py-1.5 bg-black/50 backdrop-blur-sm flex justify-center shrink-0">
+                    <div class="w-28 h-1 rounded-full bg-white/40"></div>
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-[11px] text-center text-zinc-400 mt-3">
+                Setiap perubahan profil, tautan, produk, sosmed & kontak langsung diperbarui di layar HP ini.
+              </p>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 1: DETAIL PRODUK (UNTUK PENGUNJUNG)
+         ========================================== -->
+    <div id="modal-product-detail" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+      <div class="glass-product rounded-3xl max-w-md w-full p-5 sm:p-6 border border-white/20 shadow-2xl relative animate-fadeIn">
+        <button onclick="window.app.closeProductDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <div class="flex items-start gap-4 mb-4 pr-6">
+          <img id="detail-modal-thumb" src="" alt="Product" class="w-20 h-20 rounded-2xl object-cover border border-white/15 shrink-0" />
+          <div>
+            <span id="detail-modal-category" class="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 block mb-1"></span>
+            <h3 id="detail-modal-title" class="text-base font-bold text-white leading-snug"></h3>
+          </div>
+        </div>
+
+        <div class="bg-black/35 rounded-2xl p-3.5 border border-white/10 mb-5">
+          <p id="detail-modal-desc" class="text-xs text-zinc-300 leading-relaxed whitespace-pre-line"></p>
+        </div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-white/10">
+          <div>
+            <span class="text-[10px] text-zinc-400 block">Investasi Sekali Bayar</span>
+            <div class="flex items-baseline gap-2">
+              <span id="detail-modal-orig-price" class="text-xs text-zinc-500 line-through"></span>
+              <span id="detail-modal-promo-price" class="font-editorial text-2xl text-white"></span>
+            </div>
+          </div>
+
+          <a id="detail-modal-cta-link" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all inline-flex items-center gap-1.5 shadow-lg">
+            <span id="detail-modal-cta-text">Ambil Akses Sekarang</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: LOGIN ADMIN UTAMA (SUPABASE AUTH)
+         ========================================== -->
+    <div id="modal-admin-auth" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div class="glass-panel rounded-3xl max-w-sm w-full p-6 border border-white/20 shadow-2xl relative">
+        <button onclick="window.app.closeAdminAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <div class="w-11 h-11 rounded-2xl bg-white text-zinc-950 flex items-center justify-center mb-4 shadow-md">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+
+        <h3 class="text-lg font-bold text-white">Login Admin Utama</h3>
+        <p class="text-xs text-zinc-400 mt-1 mb-5">Masuk menggunakan akun Supabase Authentication untuk mengelola Biolink.</p>
+
+        <form onsubmit="window.app.handleAdminLogin(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Email Admin</label>
+            <input type="email" id="auth-email" required placeholder="admin@ruangcipta.ai" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Password</label>
+            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" />
+          </div>
+
+          <div id="auth-preview-hint" class="hidden p-3 rounded-xl bg-indigo-500/15 border border-indigo-400/30 text-[11px] text-indigo-200 leading-relaxed">
+            💡 <strong>Mode Pratinjau Aktif:</strong> Anda dapat menekan tombol masuk secara langsung dengan email & password apa saja untuk menguji seluruh fitur Dashboard Admin.
+          </div>
+
+          <button type="submit" id="btn-submit-login" class="w-full py-2.5 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-all shadow-lg">
+            Masuk ke Dashboard
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 3: TAMBAH / EDIT TAUTAN CEPAT
+         ========================================== -->
+    <div id="modal-link-form" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="glass-panel rounded-3xl max-w-md w-full p-6 border border-white/20 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button onclick="window.app.closeLinkModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <h3 id="modal-link-heading" class="text-lg font-bold text-white mb-4">Tambah Tautan Baru</h3>
+
+        <form onsubmit="window.app.saveLinkItem(event)" class="space-y-3.5">
+          <input type="hidden" id="link-id" />
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Judul Tautan</label>
+            <input type="text" id="link-title" required placeholder="Contoh: Ruang Cipta AI" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Subjudul / Keterangan</label>
+            <input type="text" id="link-subtitle" required placeholder="Contoh: Tips & tools AI tiap hari" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">URL Tujuan</label>
+            <input type="url" id="link-url" required placeholder="https://..." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Gaya Kartu Visual</label>
+              <select id="link-style" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3 py-2 text-xs text-white">
+                <option value="solid-white">Putih Solid (Highlight Utama)</option>
+                <option value="emerald-glass">Dark Glass Hijau (WhatsApp)</option>
+                <option value="dark-glass">Dark Glass Standar</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Ikon Bawaan</label>
+              <select id="link-icon" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3 py-2 text-xs text-white">
+                <option value="sparkles">✨ Sparkles (AI)</option>
+                <option value="message-circle">💬 WhatsApp / Chat</option>
+                <option value="globe">🌐 Website / Globe</option>
+                <option value="youtube">▶️ YouTube</option>
+                <option value="instagram">📸 Instagram</option>
+                <option value="zap">⚡ Kilat / Promo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Upload File Ikon Kustom untuk Tautan Cepat -->
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+                <i data-lucide="image-plus" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span>Ikon / Logo Kustom (Opsional)</span>
+              </label>
+              <button type="button" onclick="window.app.clearCustomIcon('link')" class="text-[10px] text-red-300 hover:text-red-200">Reset ke Ikon Bawaan</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
+                <img id="preview-link-icon-img" src="" alt="" class="hidden w-full h-full object-cover" />
+                <i id="preview-link-icon-placeholder" data-lucide="sparkles" class="w-4 h-4 text-zinc-400"></i>
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <input type="file" id="file-link-icon-upload" accept="image/*" class="hidden" onchange="window.app.handleImageUpload(event, 'link-icon')" />
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('file-link-icon-upload').click()" class="px-3 py-1.5 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-[11px] font-bold inline-flex items-center gap-1 shrink-0">
+                    <i data-lucide="upload" class="w-3 h-3"></i>
+                    <span>Upload File Ikon</span>
+                  </button>
+                  <input type="text" id="link-custom-icon" placeholder="Atau tempel URL ikon..." oninput="window.app.syncCustomIconPreview('link', this.value)" class="w-full rounded-lg bg-zinc-900/90 border border-white/15 px-2.5 py-1 text-[11px] text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Badge Opsional (Misal: GRATIS)</label>
+              <input type="text" id="link-badge" placeholder="Kosongkan jika tanpa badge" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Urutan Tampil</label>
+              <input type="number" id="link-sort" value="1" min="1" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="link-active" checked class="rounded bg-zinc-900 border-white/20" />
+            <label for="link-active" class="text-xs text-zinc-300">Tampilkan tautan ini di halaman publik</label>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-3">
+            <button type="button" onclick="window.app.closeLinkModal()" class="px-4 py-2 rounded-full text-xs font-semibold bg-white/10 text-zinc-300">Batal</button>
+            <button type="submit" class="px-5 py-2 rounded-full text-xs font-bold bg-white text-zinc-950">Simpan Tautan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 4: TAMBAH / EDIT PRODUK DIGITAL
+         ========================================== -->
+    <div id="modal-product-form" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="glass-panel rounded-3xl max-w-lg w-full p-6 border border-white/20 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+        <button onclick="window.app.closeProductModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <h3 id="modal-product-heading" class="text-lg font-bold text-white mb-4">Tambah Produk AI Baru</h3>
+
+        <form onsubmit="window.app.saveProductItem(event)" class="space-y-3.5">
+          <input type="hidden" id="prod-id" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Label Kategori (Uppercase)</label>
+              <input type="text" id="prod-category" required placeholder="AUTO MOTION TOOLS" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Urutan Tampil</label>
+              <input type="number" id="prod-sort" value="1" min="1" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Judul Produk</label>
+            <input type="text" id="prod-title" required placeholder="Edit Video Otomatis, Cukup 1x Klik" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Deskripsi Singkat (Tampil di Kartu Depan)</label>
+            <input type="text" id="prod-short-desc" required placeholder="B-Roll, motion, efek teks & sound ditambah otomatis ke videomu dalam hitungan menit." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Deskripsi Lengkap & Benefit (Tampil di Modal Detail)</label>
+            <textarea id="prod-full-desc" rows="3" required placeholder="Jelaskan fitur lengkap, bonus, dan cara akses produk..." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Gambar Thumbnail Produk (Persegi 1:1)</label>
+            <div class="flex items-center gap-2 mb-1.5">
+              <input type="file" id="file-prod-upload" accept="image/*" class="hidden" onchange="window.app.handleImageUpload(event, 'product')" />
+              <button type="button" onclick="document.getElementById('file-prod-upload').click()" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-[11px] font-semibold text-white inline-flex items-center gap-1.5 shrink-0">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span>Upload Gambar</span>
+              </button>
+              <input type="url" id="prod-thumb" required placeholder="Atau tempel URL gambar https://..." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-1.5 text-xs text-white" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Harga Coret / Asli (Rp)</label>
+              <input type="number" id="prod-orig-price" required placeholder="499000" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Harga Promo (Rp)</label>
+              <input type="number" id="prod-promo-price" required placeholder="99000" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Teks Tombol Kartu</label>
+              <input type="text" id="prod-cta-text" value="Lihat Detail" required class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">URL Pembelian / Checkout</label>
+              <input type="url" id="prod-target-url" required placeholder="https://..." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="prod-active" checked class="rounded bg-zinc-900 border-white/20" />
+            <label for="prod-active" class="text-xs text-zinc-300">Tampilkan produk ini di katalog publik</label>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-3">
+            <button type="button" onclick="window.app.closeProductModal()" class="px-4 py-2 rounded-full text-xs font-semibold bg-white/10 text-zinc-300">Batal</button>
+            <button type="submit" class="px-5 py-2 rounded-full text-xs font-bold bg-white text-zinc-950">Simpan Produk</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 5: TAMBAH / EDIT MEDIA SOSIAL
+         ========================================== -->
+    <div id="modal-social-form" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="glass-panel rounded-3xl max-w-md w-full p-6 border border-white/20 shadow-2xl relative">
+        <button onclick="window.app.closeSocialModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <h3 id="modal-social-heading" class="text-lg font-bold text-white mb-4">Tambah Media Sosial</h3>
+
+        <form onsubmit="window.app.saveSocialItem(event)" class="space-y-3.5">
+          <input type="hidden" id="soc-id" />
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Nama Platform</label>
+            <input type="text" id="soc-platform" required placeholder="Contoh: Instagram / TikTok / YouTube" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Username / Handle</label>
+            <input type="text" id="soc-handle" required placeholder="Contoh: @dimassaputra.ai" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">URL Profil Media Sosial</label>
+            <input type="url" id="soc-url" required placeholder="https://instagram.com/..." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Pilih Ikon Bawaan</label>
+              <select id="soc-icon" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3 py-2 text-xs text-white">
+                <option value="instagram">📸 Instagram</option>
+                <option value="youtube">▶️ YouTube</option>
+                <option value="video">🎵 TikTok / Reels</option>
+                <option value="twitter">🐦 X / Twitter</option>
+                <option value="at-sign">🌀 Threads</option>
+                <option value="linkedin">💼 LinkedIn</option>
+                <option value="facebook">📘 Facebook</option>
+                <option value="github">💻 GitHub</option>
+                <option value="globe">🌐 Website</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Urutan Tampil</label>
+              <input type="number" id="soc-sort" value="1" min="1" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <!-- Upload File Ikon Kustom untuk Media Sosial -->
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+                <i data-lucide="image-plus" class="w-3.5 h-3.5 text-pink-400"></i>
+                <span>Upload File Ikon Media Sosial (Opsional)</span>
+              </label>
+              <button type="button" onclick="window.app.clearCustomIcon('social')" class="text-[10px] text-red-300 hover:text-red-200">Reset ke Ikon Bawaan</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
+                <img id="preview-soc-icon-img" src="" alt="" class="hidden w-full h-full object-cover" />
+                <i id="preview-soc-icon-placeholder" data-lucide="instagram" class="w-4 h-4 text-zinc-400"></i>
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <input type="file" id="file-soc-icon-upload" accept="image/*" class="hidden" onchange="window.app.handleImageUpload(event, 'social-icon')" />
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('file-soc-icon-upload').click()" class="px-3 py-1.5 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-[11px] font-bold inline-flex items-center gap-1 shrink-0">
+                    <i data-lucide="upload" class="w-3 h-3"></i>
+                    <span>Upload File Ikon</span>
+                  </button>
+                  <input type="text" id="soc-custom-icon" placeholder="Atau tempel URL ikon..." oninput="window.app.syncCustomIconPreview('social', this.value)" class="w-full rounded-lg bg-zinc-900/90 border border-white/15 px-2.5 py-1 text-[11px] text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="soc-active" checked class="rounded bg-zinc-900 border-white/20" />
+            <label for="soc-active" class="text-xs text-zinc-300">Tampilkan di section Media Sosial publik</label>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-3">
+            <button type="button" onclick="window.app.closeSocialModal()" class="px-4 py-2 rounded-full text-xs font-semibold bg-white/10 text-zinc-300">Batal</button>
+            <button type="submit" class="px-5 py-2 rounded-full text-xs font-bold bg-white text-zinc-950">Simpan Media Sosial</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 6: TAMBAH / EDIT KONTAK LAINNYA
+         ========================================== -->
+    <div id="modal-contact-form" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="glass-panel rounded-3xl max-w-md w-full p-6 border border-white/20 shadow-2xl relative">
+        <button onclick="window.app.closeContactModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
+        <h3 id="modal-contact-heading" class="text-lg font-bold text-white mb-4">Tambah Kontak Baru</h3>
+
+        <form onsubmit="window.app.saveContactItem(event)" class="space-y-3.5">
+          <input type="hidden" id="cnt-id" />
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Label Kontak</label>
+            <input type="text" id="cnt-label" required placeholder="Contoh: Email Bisnis & Endorsement" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">Informasi / Nomor / Alamat Kontak (Bisa Disalin Pengunjung)</label>
+            <input type="text" id="cnt-value" required placeholder="Contoh: collab@ruangcipta.ai atau +62 812-3456-7890" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-300 mb-1">URL Aksi Langsung (mailto:, https://wa.me/, Maps, dll.)</label>
+            <input type="text" id="cnt-url" required placeholder="mailto:collab@ruangcipta.ai atau https://wa.me/62812..." class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-sm text-white" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Pilih Ikon Bawaan</label>
+              <select id="cnt-icon" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3 py-2 text-xs text-white">
+                <option value="mail">✉️ Email</option>
+                <option value="phone">📞 Telepon / WhatsApp</option>
+                <option value="send">✈️ Telegram</option>
+                <option value="calendar">📅 Jadwal Meeting</option>
+                <option value="map-pin">📍 Lokasi / Studio</option>
+                <option value="headphones">🎧 Customer Support</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-300 mb-1">Urutan Tampil</label>
+              <input type="number" id="cnt-sort" value="1" min="1" class="w-full rounded-xl bg-zinc-900/90 border border-white/15 px-3.5 py-2 text-xs text-white" />
+            </div>
+          </div>
+
+          <!-- Upload File Ikon Kustom untuk Kontak Lainnya -->
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+                <i data-lucide="image-plus" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Upload File Ikon Kontak (Opsional)</span>
+              </label>
+              <button type="button" onclick="window.app.clearCustomIcon('contact')" class="text-[10px] text-red-300 hover:text-red-200">Reset ke Ikon Bawaan</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
+                <img id="preview-cnt-icon-img" src="" alt="" class="hidden w-full h-full object-cover" />
+                <i id="preview-cnt-icon-placeholder" data-lucide="mail" class="w-4 h-4 text-zinc-400"></i>
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <input type="file" id="file-cnt-icon-upload" accept="image/*" class="hidden" onchange="window.app.handleImageUpload(event, 'contact-icon')" />
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('file-cnt-icon-upload').click()" class="px-3 py-1.5 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-[11px] font-bold inline-flex items-center gap-1 shrink-0">
+                    <i data-lucide="upload" class="w-3 h-3"></i>
+                    <span>Upload File Ikon</span>
+                  </button>
+                  <input type="text" id="cnt-custom-icon" placeholder="Atau tempel URL ikon..." oninput="window.app.syncCustomIconPreview('contact', this.value)" class="w-full rounded-lg bg-zinc-900/90 border border-white/15 px-2.5 py-1 text-[11px] text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="cnt-active" checked class="rounded bg-zinc-900 border-white/20" />
+            <label for="cnt-active" class="text-xs text-zinc-300">Tampilkan di section Kontak Lainnya publik</label>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-3">
+            <button type="button" onclick="window.app.closeContactModal()" class="px-4 py-2 rounded-full text-xs font-semibold bg-white/10 text-zinc-300">Batal</button>
+            <button type="submit" class="px-5 py-2 rounded-full text-xs font-bold bg-white text-zinc-950">Simpan Kontak</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 7: POPUP KONFIRMASI HAPUS & RESET
+         ========================================== -->
+    <div id="modal-confirm-dialog" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div class="glass-panel rounded-3xl max-w-sm w-full p-6 border border-white/20 shadow-2xl relative text-center">
+        <div class="w-12 h-12 rounded-2xl bg-red-500/20 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <h3 id="confirm-modal-title" class="text-base font-bold text-white">Konfirmasi Tindakan</h3>
+        <p id="confirm-modal-message" class="text-xs text-zinc-300 mt-1.5 leading-relaxed">
+          Apakah Anda yakin ingin melanjutkan tindakan ini?
+        </p>
+        <div class="flex items-center justify-center gap-2.5 mt-6">
+          <button type="button" onclick="window.app.closeConfirmModal()" class="flex-1 py-2.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/15 text-zinc-200 transition-all">
+            Batal
+          </button>
+          <button type="button" id="confirm-modal-btn" onclick="window.app.executeConfirmedAction()" class="flex-1 py-2.5 rounded-full text-xs font-bold bg-red-500 hover:bg-red-600 text-white transition-all shadow-lg">
+            Ya, Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden px-4 py-3 rounded-2xl glass-panel border border-white/20 text-xs font-semibold text-white shadow-2xl items-center gap-2.5">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <span id="toast-message">Berhasil disimpan</span>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       JAVASCRIPT MODULE (SUPABASE + STORAGE + PWA + CRUD)
+       ========================================== -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // KONFIGURASI APLIKASI
+    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE SUPABASE
+    // PASTE SUPABASE URL & ANON KEY ANDA DI SINI
+    const SUPABASE_URL = "https://ldlqzesnkyevfewmxnek.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_a2WqAdncMeSkDHENJ6EUTw_P9AkACN5";
+    const STORAGE_BUCKET = "biolink-media";
+
+    // Inisialisasi Klien Supabase jika sudah dikonfigurasi
+    let supabase = null;
+    if (!IS_PREVIEW && SUPABASE_URL !== "URL_SUPABASE_ANDA" && SUPABASE_ANON_KEY !== "ANON_KEY_ANDA") {
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    // DATA DUMMY AWAL (Sesuai Referensi + Section Media Sosial & Kontak Lainnya)
+    const INITIAL_DUMMY_DATA = {
+      profile: {
+        id: "00000000-0000-0000-0000-000000000001",
+        full_name: "Dimas Saputra",
+        role_tagline: "CREATOR AI · MARKETER · WEB DEV",
+        bio_text: "Hi, gue Dimas 👋 Lagi ngembangin @ruangcipta.ai. Bantu creator, affiliator, seller & UMKM kerja lebih simpel pakai AI.",
+        avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+        bg_image_url: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=85",
+        is_open_collab: true,
+        status_text: "Terima project & kolaborasi",
+        cta_hint_text: "Mulai di sini",
+        product_section_title: "TOOLS AI YANG BANTU KERJAAN GUE",
+        social_section_title: "JEJARING & MEDIA SOSIAL RESMI",
+        contact_section_title: "KONTAK LAINNYA & KOLABORASI"
+      },
+      links: [
+        {
+          id: "10000000-0000-0000-0000-000000000001",
+          title: "Ruang Cipta AI",
+          subtitle: "Tips & tools AI tiap hari di @ruangcipta.ai",
+          url: "https://instagram.com/",
+          icon_name: "sparkles",
+          custom_icon_url: "",
+          card_style: "solid-white",
+          badge_text: "",
+          badge_color: "green",
+          sort_order: 1,
+          click_count: 342,
+          is_active: true
+        },
+        {
+          id: "10000000-0000-0000-0000-000000000002",
+          title: "Gabung Saluran WhatsApp",
+          subtitle: "Tips konten & AI tiap hari",
+          url: "https://whatsapp.com/channel/",
+          icon_name: "message-circle",
+          custom_icon_url: "",
+          card_style: "emerald-glass",
+          badge_text: "GRATIS",
+          badge_color: "green",
+          sort_order: 2,
+          click_count: 518,
+          is_active: true
+        }
+      ],
+      products: [
+        {
+          id: "20000000-0000-0000-0000-000000000001",
+          category: "AUTO MOTION TOOLS",
+          title: "Edit Video Otomatis, Cukup 1x Klik",
+          short_desc: "B-Roll, motion, efek teks & sound ditambah otomatis ke videomu dalam hitungan menit.",
+          full_desc: "Hemat waktu editing hingga 90%!\n\n✅ Otomatis sisipkan B-Roll relevan, transisi motion grafis, subtitle dinamis, dan sound effect.\n✅ Cocok untuk konten Reels, TikTok, dan YouTube Shorts.\n✅ Akses seumur hidup + tutorial penggunaan lengkap bahasa Indonesia.",
+          thumbnail_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300&h=300&fit=crop",
+          original_price: 499000,
+          promo_price: 99000,
+          cta_text: "Lihat Detail",
+          target_url: "https://wa.me/6281234567890?text=Halo%20Dimas,%20saya%20mau%20akses%20Auto%20Motion%20Tools",
+          sort_order: 1,
+          click_count: 215,
+          is_active: true
+        },
+        {
+          id: "20000000-0000-0000-0000-000000000002",
+          category: "YOUTUBE GLOBAL",
+          title: "Cuan Dolar dari YouTube Luar Negeri",
+          short_desc: "Bangun channel YouTube Shorts untuk penonton luar negeri, bisa tanpa tampil muka.",
+          full_desc: "Panduan & AI Workflow membangun channel YouTube Shorts target penonton Tier-1 (US/UK/Eropa) dengan RPM tinggi.\n\n✅ Riset ide otomatis menggunakan AI.\n✅ Faceless (Tanpa harus tampil wajah & tanpa rekam suara sendiri).\n✅ Studi kasus channel yang sudah dimonetisasi.",
+          thumbnail_url: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=300&h=300&fit=crop",
+          original_price: 250000,
+          promo_price: 99000,
+          cta_text: "Lihat Detail",
+          target_url: "https://wa.me/6281234567890?text=Halo%20Dimas,%20saya%20mau%20akses%20YouTube%20Global",
+          sort_order: 2,
+          click_count: 184,
+          is_active: true
+        },
+        {
+          id: "20000000-0000-0000-0000-000000000003",
+          category: "WEB APP",
+          title: "Bikin Aplikasi Sendiri, Tanpa Coding",
+          short_desc: "Bangun web app & tools bisnis siap pakai dengan bantuan AI dalam hitungan jam.",
+          full_desc: "Blueprint membuat aplikasi web interaktif, SaaS mikro, dan kalkulator bisnis tanpa latar belakang programmer.\n\n✅ Template prompt AI siap pakai.\n✅ Integrasi database gratis & cepat.\n✅ Bisa dijual kembali ke klien UMKM atau dipakai sendiri.",
+          thumbnail_url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=300&fit=crop",
+          original_price: 350000,
+          promo_price: 99000,
+          cta_text: "Lihat Detail",
+          target_url: "https://wa.me/6281234567890?text=Halo%20Dimas,%20saya%20mau%20akses%20Web%20App%20Builder",
+          sort_order: 3,
+          click_count: 129,
+          is_active: true
+        }
+      ],
+      socials: [
+        {
+          id: "30000000-0000-0000-0000-000000000001",
+          platform: "Instagram",
+          handle: "@dimassaputra.ai",
+          url: "https://instagram.com/",
+          icon_name: "instagram",
+          custom_icon_url: "",
+          sort_order: 1,
+          click_count: 190,
+          is_active: true
+        },
+        {
+          id: "30000000-0000-0000-0000-000000000002",
+          platform: "TikTok",
+          handle: "@ruangcipta.ai",
+          url: "https://tiktok.com/",
+          icon_name: "video",
+          custom_icon_url: "",
+          sort_order: 2,
+          click_count: 165,
+          is_active: true
+        },
+        {
+          id: "30000000-0000-0000-0000-000000000003",
+          platform: "YouTube",
+          handle: "Dimas Saputra AI",
+          url: "https://youtube.com/",
+          icon_name: "youtube",
+          custom_icon_url: "",
+          sort_order: 3,
+          click_count: 142,
+          is_active: true
+        },
+        {
+          id: "30000000-0000-0000-0000-000000000004",
+          platform: "Threads",
+          handle: "@dimassaputra.ai",
+          url: "https://threads.net/",
+          icon_name: "at-sign",
+          custom_icon_url: "",
+          sort_order: 4,
+          click_count: 88,
+          is_active: true
+        }
+      ],
+      contacts: [
+        {
+          id: "40000000-0000-0000-0000-000000000001",
+          label: "WhatsApp Project & Kolaborasi",
+          contact_value: "+62 812-3456-7890",
+          action_url: "https://wa.me/6281234567890?text=Halo%20Dimas,%20saya%20ingin%20diskusi%20project%20/%20kolaborasi",
+          icon_name: "phone",
+          custom_icon_url: "",
+          sort_order: 1,
+          click_count: 96,
+          is_active: true
+        },
+        {
+          id: "40000000-0000-0000-0000-000000000002",
+          label: "Email Bisnis & Endorsement",
+          contact_value: "collab@ruangcipta.ai",
+          action_url: "mailto:collab@ruangcipta.ai",
+          icon_name: "mail",
+          custom_icon_url: "",
+          sort_order: 2,
+          click_count: 64,
+          is_active: true
+        },
+        {
+          id: "40000000-0000-0000-0000-000000000003",
+          label: "Telegram Diskusi Cepat",
+          contact_value: "@dimassaputra_ai",
+          action_url: "https://t.me/dimassaputra_ai",
+          icon_name: "send",
+          custom_icon_url: "",
+          sort_order: 3,
+          click_count: 51,
+          is_active: true
+        }
+      ]
+    };
+
+    // STATE APLIKASI
+    const state = {
+      profile: structuredClone(INITIAL_DUMMY_DATA.profile),
+      links: structuredClone(INITIAL_DUMMY_DATA.links),
+      products: structuredClone(INITIAL_DUMMY_DATA.products),
+      socials: structuredClone(INITIAL_DUMMY_DATA.socials),
+      contacts: structuredClone(INITIAL_DUMMY_DATA.contacts),
+      isAdminLoggedIn: false,
+      isAdminViewOpen: false,
+      activeTab: 'overview',
+      pendingConfirmCallback: null
+    };
+
+    // HELPER: RENDER IKON LUCIDE ATAU GAMBAR KUSTOM
+    function renderIconVisual(iconName, customIconUrl, iconClass = "w-5 h-5", imgClass = "w-full h-full object-cover rounded-full") {
+      if (customIconUrl && String(customIconUrl).trim() !== "") {
+        return `<img src="${customIconUrl}" alt="icon" class="${imgClass}" />`;
+      }
+      return `<i data-lucide="${iconName || 'sparkles'}" class="${iconClass}"></i>`;
+    }
+
+    // FORMAT RUPIAH
+    function formatRupiah(num) {
+      const n = Number(num) || 0;
+      return "Rp" + n.toLocaleString("id-ID");
+    }
+
+    // FORMAT BIO DENGAN HIGHLIGHT @HANDLE
+    function formatBioText(text) {
+      const escaped = String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      return escaped.replace(
+        /(@[a-zA-Z0-9._]+)/g,
+        '<span class="font-bold text-white underline decoration-white/60 underline-offset-2">$1</span>'
+      );
+    }
+
+    // SALIN TEKS KE CLIPBOARD (Kompatibel Iframe & Mobile)
+    function copyTextToClipboard(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        showToast("Disalin: " + text);
+      } catch (err) {
+        showToast("Gagal menyalin teks");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // KOMPRESI GAMBAR CLIENT-SIDE (Untuk Preview & Fallback Storage)
+    function compressImageFile(file, maxWidth = 1200, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = new Image ? document.createElement("canvas") : null;
+            let width = img.width;
+            let height = img.height;
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+            canvas.toBlob(
+              (blob) => resolve({ dataUrl, blob }),
+              "image/jpeg",
+              quality
+            );
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // TOAST HELPER
+    function showToast(msg) {
+      const toast = document.getElementById("toast-notification");
+      const text = document.getElementById("toast-message");
+      text.textContent = msg;
+      toast.classList.remove("hidden");
+      toast.classList.add("flex");
+      setTimeout(() => {
+        toast.classList.add("hidden");
+        toast.classList.remove("flex");
+      }, 2800);
+    }
+
+    // ==========================================
+    // FUNGSI WAJIB: autoSetupDatabase()
+    // Mengecek 5 tabel di Supabase (saat IS_PREVIEW = false).
+    // Jika masih kosong, otomatis menyuntikkan data awal.
+    // ==========================================
+    async function autoSetupDatabase() {
+      if (IS_PREVIEW || !supabase) {
+        document.getElementById("preview-mode-badge").classList.remove("hidden");
+        document.getElementById("auth-preview-hint").classList.remove("hidden");
+        return;
+      }
+
+      try {
+        // 1. Cek tabel biolink_profile
+        const { data: profData, error: profErr } = await supabase
+          .from("biolink_profile")
+          .select("*")
+          .limit(1);
+        if (!profErr && (!profData || profData.length === 0)) {
+          await supabase.from("biolink_profile").insert([INITIAL_DUMMY_DATA.profile]);
+        }
+
+        // 2. Cek tabel biolink_links
+        const { data: linkData, error: linkErr } = await supabase
+          .from("biolink_links")
+          .select("*")
+          .limit(1);
+        if (!linkErr && (!linkData || linkData.length === 0)) {
+          await supabase.from("biolink_links").insert(INITIAL_DUMMY_DATA.links);
+        }
+
+        // 3. Cek tabel biolink_products
+        const { data: prodData, error: prodErr } = await supabase
+          .from("biolink_products")
+          .select("*")
+          .limit(1);
+        if (!prodErr && (!prodData || prodData.length === 0)) {
+          await supabase.from("biolink_products").insert(INITIAL_DUMMY_DATA.products);
+        }
+
+        // 4. Cek tabel biolink_socials
+        const { data: socData, error: socErr } = await supabase
+          .from("biolink_socials")
+          .select("*")
+          .limit(1);
+        if (!socErr && (!socData || socData.length === 0)) {
+          await supabase.from("biolink_socials").insert(INITIAL_DUMMY_DATA.socials);
+        }
+
+        // 5. Cek tabel biolink_contacts
+        const { data: cntData, error: cntErr } = await supabase
+          .from("biolink_contacts")
+          .select("*")
+          .limit(1);
+        if (!cntErr && (!cntData || cntData.length === 0)) {
+          await supabase.from("biolink_contacts").insert(INITIAL_DUMMY_DATA.contacts);
+        }
+      } catch (err) {
+        console.warn("Auto setup check:", err.message);
+      }
+    }
+
+    // LOAD DATA DARI SUPABASE ATAU STATE PREVIEW
+    async function loadAllData() {
+      if (IS_PREVIEW || !supabase) {
+        renderPublicBiolink();
+        renderAdminDashboard();
+        return;
+      }
+
+      try {
+        const [profRes, linkRes, prodRes, socRes, cntRes] = await Promise.all([
+          supabase.from("biolink_profile").select("*").limit(1).maybeSingle(),
+          supabase.from("biolink_links").select("*").order("sort_order", { ascending: true }),
+          supabase.from("biolink_products").select("*").order("sort_order", { ascending: true }),
+          supabase.from("biolink_socials").select("*").order("sort_order", { ascending: true }),
+          supabase.from("biolink_contacts").select("*").order("sort_order", { ascending: true })
+        ]);
+
+        if (profRes.data) state.profile = { ...INITIAL_DUMMY_DATA.profile, ...profRes.data };
+        if (linkRes.data && linkRes.data.length > 0) state.links = linkRes.data;
+        if (prodRes.data && prodRes.data.length > 0) state.products = prodRes.data;
+        if (socRes.data && socRes.data.length > 0) state.socials = socRes.data;
+        if (cntRes.data && cntRes.data.length > 0) state.contacts = cntRes.data;
+      } catch (e) {
+        console.error("Gagal memuat data dari Supabase:", e);
+      }
+
+      renderPublicBiolink();
+      renderAdminDashboard();
+    }
+
+    // ==========================================
+    // RENDER HALAMAN PUBLIK BIOLINK
+    // ==========================================
+    function renderPublicBiolink() {
+      const p = state.profile;
+      document.title = `${p.full_name} — ${p.role_tagline}`;
+      document.getElementById("bg-wallpaper").style.backgroundImage = `url('${p.bg_image_url}')`;
+      document.getElementById("pub-avatar").src = p.avatar_url;
+      document.getElementById("pub-fullname").textContent = p.full_name;
+      document.getElementById("pub-tagline").textContent = p.role_tagline;
+      document.getElementById("pub-bio").innerHTML = formatBioText(p.bio_text);
+      document.getElementById("pub-cta-hint").textContent = p.cta_hint_text || "Mulai di sini";
+      document.getElementById("pub-product-section-title").textContent = p.product_section_title || "TOOLS AI YANG BANTU KERJAAN GUE";
+      document.getElementById("pub-social-section-title").textContent = p.social_section_title || "JEJARING & MEDIA SOSIAL RESMI";
+      document.getElementById("pub-contact-section-title").textContent = p.contact_section_title || "KONTAK LAINNYA & KOLABORASI";
+      document.getElementById("footer-owner-name").textContent = p.full_name;
+      document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+      // Status Badge
+      const badgeEl = document.getElementById("pub-status-badge");
+      const dotEl = document.getElementById("pub-status-dot");
+      const statusTxtEl = document.getElementById("pub-status-text");
+      statusTxtEl.textContent = p.status_text;
+
+      if (p.is_open_collab) {
+        badgeEl.textContent = "Open";
+        badgeEl.className = "bg-white text-zinc-950 text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-tight";
+        dotEl.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]";
+      } else {
+        badgeEl.textContent = "Closed";
+        badgeEl.className = "bg-zinc-700 text-zinc-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-tight";
+        dotEl.className = "w-2 h-2 rounded-full bg-amber-500";
+      }
+
+      // 1. Render Quick Links
+      const linksContainer = document.getElementById("pub-links-container");
+      const activeLinks = [...state.links]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+
+      linksContainer.innerHTML = activeLinks.map(link => {
+        const isSolidWhite = link.card_style === "solid-white";
+        const isEmerald = link.card_style === "emerald-glass";
+
+        const cardClasses = isSolidWhite
+          ? "bg-white text-zinc-950 shadow-xl hover:bg-zinc-100"
+          : isEmerald
+          ? "glass-emerald text-white shadow-lg hover:border-green-400/40"
+          : "glass-dark text-white shadow-lg hover:border-white/30";
+
+        const iconCircleClasses = isSolidWhite
+          ? "bg-zinc-950 text-white"
+          : isEmerald
+          ? "bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]"
+          : "bg-white/10 text-white border border-white/15";
+
+        const subtitleColor = isSolidWhite ? "text-zinc-500" : "text-zinc-300/80";
+        const arrowColor = isSolidWhite ? "text-zinc-700" : "text-zinc-300";
+
+        const badgeHtml = link.badge_text
+          ? `<span class="inline-block bg-green-500 text-zinc-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider mr-1">${link.badge_text}</span>`
+          : "";
+
+        return `
+          <a href="${link.url}" target="_blank" rel="noopener noreferrer"
+             onclick="window.app.recordLinkClick('${link.id}')"
+             class="block rounded-2xl p-3.5 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${cardClasses}">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0 ${iconCircleClasses}">
+                  ${renderIconVisual(link.icon_name || 'sparkles', link.custom_icon_url, 'w-5 h-5')}
+                </div>
+                <div class="min-w-0 text-left">
+                  <h3 class="text-xs sm:text-[13px] font-bold truncate leading-snug">${link.title}</h3>
+                  <p class="text-[11px] ${subtitleColor} truncate mt-0.5 flex items-center">
+                    ${badgeHtml}
+                    <span class="truncate">${link.subtitle}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="shrink-0 pr-1 ${arrowColor}">
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join("");
+
+      // 2. Render Products Showcase
+      const productsContainer = document.getElementById("pub-products-container");
+      const activeProducts = [...state.products]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+
+      productsContainer.innerHTML = activeProducts.map(prod => `
+        <article class="glass-product rounded-[22px] p-4 transition-all duration-200 hover:border-white/30 shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <img src="${prod.thumbnail_url}" alt="${prod.title}" class="w-20 h-20 rounded-xl object-cover shrink-0 border border-white/10 bg-zinc-900" />
+            <div class="min-w-0 flex-1 text-left">
+              <span class="block text-[9px] font-semibold uppercase tracking-[0.14em] text-zinc-400 mb-0.5">
+                ${prod.category}
+              </span>
+              <h3 class="text-xs sm:text-[13.5px] font-bold text-white leading-snug mb-1">
+                ${prod.title}
+              </h3>
+              <p class="text-[11px] text-zinc-400 leading-relaxed line-clamp-2">
+                ${prod.short_desc}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+            <div class="flex items-baseline gap-1.5">
+              ${Number(prod.original_price) > 0 ? `<span class="text-[11px] text-zinc-500 line-through">${formatRupiah(prod.original_price)}</span>` : ''}
+              <span class="font-editorial text-2xl text-white leading-none">${formatRupiah(prod.promo_price)}</span>
+            </div>
+
+            <button type="button" onclick="window.app.openProductDetailModal('${prod.id}')"
+                    class="px-3.5 py-1.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 text-[11px] font-bold inline-flex items-center gap-1 transition-all shadow-md shrink-0">
+              <span>${prod.cta_text || 'Lihat Detail'}</span>
+              <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </article>
+      `).join("");
+
+      // 3. Render Media Sosial Section
+      const socialsSection = document.getElementById("pub-socials-section");
+      const socialsContainer = document.getElementById("pub-socials-container");
+      const activeSocials = [...state.socials]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+
+      if (activeSocials.length === 0) {
+        socialsSection.classList.add("hidden");
+      } else {
+        socialsSection.classList.remove("hidden");
+        socialsContainer.innerHTML = activeSocials.map(soc => `
+          <a href="${soc.url}" target="_blank" rel="noopener noreferrer"
+             onclick="window.app.recordSocialClick('${soc.id}')"
+             class="glass-dark rounded-2xl p-3 flex items-center justify-between gap-2.5 hover:border-white/35 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-lg group">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden text-white shrink-0 group-hover:bg-white group-hover:text-zinc-950 transition-colors">
+                ${renderIconVisual(soc.icon_name || 'instagram', soc.custom_icon_url, 'w-4 h-4')}
+              </div>
+              <div class="min-w-0 text-left">
+                <p class="text-xs font-bold text-white truncate leading-tight">${soc.platform}</p>
+                <p class="text-[10px] text-zinc-400 truncate mt-0.5">${soc.handle}</p>
+              </div>
+            </div>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-white shrink-0"></i>
+          </a>
+        `).join("");
+      }
+
+      // 4. Render Kontak Lainnya Section
+      const contactsSection = document.getElementById("pub-contacts-section");
+      const contactsContainer = document.getElementById("pub-contacts-container");
+      const activeContacts = [...state.contacts]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+
+      if (activeContacts.length === 0) {
+        contactsSection.classList.add("hidden");
+      } else {
+        contactsSection.classList.remove("hidden");
+        contactsContainer.innerHTML = activeContacts.map(cnt => `
+          <div class="glass-dark rounded-2xl p-3.5 flex items-center justify-between gap-3 hover:border-white/30 transition-all shadow-lg">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center overflow-hidden text-indigo-300 shrink-0">
+                ${renderIconVisual(cnt.icon_name || 'mail', cnt.custom_icon_url, 'w-4 h-4')}
+              </div>
+              <div class="min-w-0 text-left">
+                <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 truncate">${cnt.label}</p>
+                <p class="text-xs font-bold text-white truncate mt-0.5">${cnt.contact_value}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button"
+                      onclick="window.app.copyContactValue('${cnt.id}', '${cnt.contact_value.replace(/'/g, "\\'")}')"
+                      class="px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-[10px] font-semibold text-zinc-200 inline-flex items-center gap-1 transition-all"
+                      title="Salin Kontak">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>Salin</span>
+              </button>
+              <a href="${cnt.action_url}" target="_blank" rel="noopener noreferrer"
+                 onclick="window.app.recordContactClick('${cnt.id}')"
+                 class="px-3 py-1.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 text-[10px] font-bold inline-flex items-center gap-1 transition-all shadow">
+                <span>Hubungi</span>
+                <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+              </a>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      renderPhonePreview();
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // RENDER LIVE HANDPHONE PREVIEW DI SISI KANAN DASHBOARD
+    // ==========================================
+    function renderPhonePreview() {
+      const scrollContainer = document.getElementById("phone-preview-scroll");
+      const bgEl = document.getElementById("phone-preview-bg");
+      if (!scrollContainer || !bgEl) return;
+
+      const p = state.profile;
+      bgEl.style.backgroundImage = `url('${p.bg_image_url}')`;
+
+      const activeLinks = [...state.links]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      const activeProducts = [...state.products]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      const activeSocials = [...state.socials]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      const activeContacts = [...state.contacts]
+        .filter(item => item.is_active)
+        .sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+
+      const statusBadgeHtml = p.is_open_collab
+        ? `<span class="bg-white text-zinc-950 text-[8px] font-bold px-2 py-0.5 rounded-full">Open</span>
+           <span class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_6px_#22c55e]"></span>`
+        : `<span class="bg-zinc-700 text-zinc-300 text-[8px] font-bold px-2 py-0.5 rounded-full">Closed</span>
+           <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>`;
+
+      const linksHtml = activeLinks.map(link => {
+        const isSolidWhite = link.card_style === "solid-white";
+        const isEmerald = link.card_style === "emerald-glass";
+        const cardClasses = isSolidWhite
+          ? "bg-white text-zinc-950 shadow-md"
+          : isEmerald
+          ? "glass-emerald text-white"
+          : "glass-dark text-white";
+        const iconCircleClasses = isSolidWhite
+          ? "bg-zinc-950 text-white"
+          : isEmerald
+          ? "bg-green-500 text-white"
+          : "bg-white/10 text-white border border-white/15";
+        const subtitleColor = isSolidWhite ? "text-zinc-500" : "text-zinc-300/80";
+        const badgeHtml = link.badge_text
+          ? `<span class="inline-block bg-green-500 text-zinc-950 text-[7px] font-extrabold px-1 py-0.2 rounded uppercase mr-1">${link.badge_text}</span>`
+          : "";
+
+        return `
+          <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="block rounded-xl p-2.5 ${cardClasses} transition-transform hover:scale-[1.01]">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden shrink-0 ${iconCircleClasses}">
+                  ${renderIconVisual(link.icon_name || 'sparkles', link.custom_icon_url, 'w-3.5 h-3.5')}
+                </div>
+                <div class="min-w-0 text-left">
+                  <p class="text-[10.5px] font-bold truncate leading-tight">${link.title}</p>
+                  <p class="text-[9px] ${subtitleColor} truncate mt-0.5 flex items-center">
+                    ${badgeHtml}<span class="truncate">${link.subtitle}</span>
+                  </p>
+                </div>
+              </div>
+              <i data-lucide="arrow-up-right" class="w-3 h-3 shrink-0 opacity-70"></i>
+            </div>
+          </a>
+        `;
+      }).join("");
+
+      const productsHtml = activeProducts.map(prod => `
+        <div class="glass-product rounded-2xl p-2.5 border border-white/15">
+          <div class="flex items-start gap-2.5">
+            <img src="${prod.thumbnail_url}" alt="" class="w-12 h-12 rounded-lg object-cover shrink-0 border border-white/10 bg-zinc-900" />
+            <div class="min-w-0 flex-1 text-left">
+              <span class="block text-[7.5px] font-semibold uppercase tracking-widest text-zinc-400">${prod.category}</span>
+              <p class="text-[10.5px] font-bold text-white leading-snug truncate">${prod.title}</p>
+              <p class="text-[9px] text-zinc-400 line-clamp-2 leading-snug mt-0.5">${prod.short_desc}</p>
+            </div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-between">
+            <div class="flex items-baseline gap-1">
+              ${Number(prod.original_price) > 0 ? `<span class="text-[8.5px] text-zinc-500 line-through">${formatRupiah(prod.original_price)}</span>` : ''}
+              <span class="font-editorial text-base text-white leading-none">${formatRupiah(prod.promo_price)}</span>
+            </div>
+            <button type="button" onclick="window.app.openProductDetailModal('${prod.id}')" class="px-2.5 py-1 rounded-full bg-white text-zinc-950 text-[8.5px] font-bold inline-flex items-center gap-0.5">
+              <span>${prod.cta_text || 'Lihat Detail'}</span>
+              <i data-lucide="arrow-up-right" class="w-2.5 h-2.5"></i>
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      const socialsHtml = activeSocials.map(soc => `
+        <a href="${soc.url}" target="_blank" rel="noopener noreferrer" class="glass-dark rounded-xl p-2 flex items-center justify-between gap-1.5">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <div class="w-6 h-6 rounded-full bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden text-white shrink-0">
+              ${renderIconVisual(soc.icon_name || 'instagram', soc.custom_icon_url, 'w-3 h-3')}
+            </div>
+            <div class="min-w-0 text-left">
+              <p class="text-[9.5px] font-bold text-white truncate leading-tight">${soc.platform}</p>
+              <p class="text-[8px] text-zinc-400 truncate">${soc.handle}</p>
+            </div>
+          </div>
+          <i data-lucide="arrow-up-right" class="w-2.5 h-2.5 text-zinc-400 shrink-0"></i>
+        </a>
+      `).join("");
+
+      const contactsHtml = activeContacts.map(cnt => `
+        <div class="glass-dark rounded-xl p-2.5 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <div class="w-6 h-6 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center overflow-hidden text-indigo-300 shrink-0">
+              ${renderIconVisual(cnt.icon_name || 'mail', cnt.custom_icon_url, 'w-3 h-3')}
+            </div>
+            <div class="min-w-0 text-left">
+              <p class="text-[8px] font-semibold uppercase tracking-wider text-zinc-400 truncate">${cnt.label}</p>
+              <p class="text-[9.5px] font-bold text-white truncate">${cnt.contact_value}</p>
+            </div>
+          </div>
+          <a href="${cnt.action_url}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-full bg-white text-zinc-950 text-[8px] font-bold shrink-0">
+            Hubungi
+          </a>
+        </div>
+      `).join("");
+
+      scrollContainer.innerHTML = `
+        <div class="flex flex-col items-center text-center pt-1">
+          <div class="w-14 h-14 rounded-full p-[1.5px] bg-gradient-to-tr from-indigo-400 via-purple-500 to-blue-400 shadow-lg mb-2">
+            <img src="${p.avatar_url}" alt="Avatar" class="w-full h-full rounded-full object-cover bg-zinc-900" />
+          </div>
+          <div class="inline-flex items-center gap-1.5 rounded-full bg-zinc-950/85 border border-white/15 p-0.5 pr-2.5 mb-1.5">
+            ${statusBadgeHtml}
+            <span class="text-[8.5px] font-medium text-zinc-200">${p.status_text}</span>
+          </div>
+          <h3 class="font-editorial text-2xl text-white leading-tight">${p.full_name}</h3>
+          <p class="text-[7.5px] font-semibold uppercase tracking-[0.2em] text-zinc-400 mt-0.5 mb-2">${p.role_tagline}</p>
+          <p class="text-[9.5px] text-zinc-300/90 leading-relaxed mb-2">${formatBioText(p.bio_text)}</p>
+          <div class="inline-flex items-center gap-1 text-[9px] font-medium text-zinc-200">
+            <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded bg-blue-500/90 text-white text-[8px]">⬇</span>
+            <span>${p.cta_hint_text || 'Mulai di sini'}</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">${linksHtml}</div>
+
+        ${activeProducts.length > 0 ? `
+          <div class="pt-1">
+            <p class="text-[8px] font-semibold uppercase tracking-[0.18em] text-zinc-400 text-center mb-2">${p.product_section_title || 'TOOLS AI'}</p>
+            <div class="space-y-2">${productsHtml}</div>
+          </div>
+        ` : ''}
+
+        ${activeSocials.length > 0 ? `
+          <div class="pt-1">
+            <p class="text-[8px] font-semibold uppercase tracking-[0.18em] text-zinc-400 text-center mb-2">${p.social_section_title || 'MEDIA SOSIAL'}</p>
+            <div class="grid grid-cols-2 gap-1.5">${socialsHtml}</div>
+          </div>
+        ` : ''}
+
+        ${activeContacts.length > 0 ? `
+          <div class="pt-1">
+            <p class="text-[8px] font-semibold uppercase tracking-[0.18em] text-zinc-400 text-center mb-2">${p.contact_section_title || 'KONTAK LAINNYA'}</p>
+            <div class="space-y-1.5">${contactsHtml}</div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    // ==========================================
+    // RENDER DASHBOARD ADMIN (6 MENU LENGKAP)
+    // ==========================================
+    function renderAdminDashboard() {
+      const p = state.profile;
+      document.getElementById("admin-sidebar-avatar").src = p.avatar_url;
+      document.getElementById("admin-sidebar-name").textContent = p.full_name;
+
+      // Isi Form Profil & Preview Gambar
+      document.getElementById("inp-full-name").value = p.full_name;
+      document.getElementById("inp-role-tagline").value = p.role_tagline;
+      document.getElementById("inp-bio-text").value = p.bio_text;
+      document.getElementById("inp-avatar-url").value = p.avatar_url;
+      document.getElementById("preview-avatar-img").src = p.avatar_url;
+      document.getElementById("inp-bg-url").value = p.bg_image_url;
+      document.getElementById("preview-bg-img").src = p.bg_image_url;
+      document.getElementById("inp-open-collab").value = String(p.is_open_collab);
+      document.getElementById("inp-status-text").value = p.status_text;
+      document.getElementById("inp-cta-hint").value = p.cta_hint_text || "Mulai di sini";
+      document.getElementById("inp-product-section-title").value = p.product_section_title || "TOOLS AI YANG BANTU KERJAAN GUE";
+      document.getElementById("inp-social-section-title").value = p.social_section_title || "JEJARING & MEDIA SOSIAL RESMI";
+      document.getElementById("inp-contact-section-title").value = p.contact_section_title || "KONTAK LAINNYA & KOLABORASI";
+
+      // Hitung Metrik Analitik
+      const totalLinkClicks = state.links.reduce((acc, l) => acc + (Number(l.click_count) || 0), 0);
+      const totalProdClicks = state.products.reduce((acc, pr) => acc + (Number(pr.click_count) || 0), 0);
+      const totalSocClicks = state.socials.reduce((acc, s) => acc + (Number(s.click_count) || 0), 0);
+      const totalCntClicks = state.contacts.reduce((acc, c) => acc + (Number(c.click_count) || 0), 0);
+
+      document.getElementById("stat-total-link-clicks").textContent = totalLinkClicks.toLocaleString("id-ID");
+      document.getElementById("stat-total-product-clicks").textContent = totalProdClicks.toLocaleString("id-ID");
+      document.getElementById("stat-total-social-clicks").textContent = totalSocClicks.toLocaleString("id-ID");
+      document.getElementById("stat-total-contact-clicks").textContent = totalCntClicks.toLocaleString("id-ID");
+
+      // Ranking Tautan
+      const linksRankEl = document.getElementById("overview-links-rank");
+      const sortedLinksByClick = [...state.links].sort((a, b) => (b.click_count || 0) - (a.click_count || 0));
+      linksRankEl.innerHTML = sortedLinksByClick.map(l => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="min-w-0 pr-3">
+            <p class="text-xs font-bold text-white truncate">${l.title}</p>
+            <p class="text-[11px] text-zinc-400 truncate">${l.subtitle}</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
+            ${l.click_count || 0} klik
+          </span>
+        </div>
+      `).join("");
+
+      // Ranking Produk
+      const prodsRankEl = document.getElementById("overview-products-rank");
+      const sortedProdsByClick = [...state.products].sort((a, b) => (b.click_count || 0) - (a.click_count || 0));
+      prodsRankEl.innerHTML = sortedProdsByClick.map(pr => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="flex items-center gap-2.5 min-w-0 pr-3">
+            <img src="${pr.thumbnail_url}" class="w-9 h-9 rounded-lg object-cover shrink-0" alt="" />
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-white truncate">${pr.title}</p>
+              <p class="text-[11px] text-zinc-400">${formatRupiah(pr.promo_price)}</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+            ${pr.click_count || 0} klik
+          </span>
+        </div>
+      `).join("");
+
+      // Daftar Kelola Tautan (Tab 3)
+      const adminLinksEl = document.getElementById("admin-links-list");
+      const sortedLinks = [...state.links].sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      adminLinksEl.innerHTML = sortedLinks.map(l => `
+        <div class="glass-panel rounded-2xl p-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden text-white shrink-0">
+              ${renderIconVisual(l.icon_name || 'sparkles', l.custom_icon_url, 'w-5 h-5', 'w-full h-full object-cover')}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm font-bold text-white truncate">${l.title}</h4>
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${l.is_active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-zinc-700 text-zinc-400'}">
+                  ${l.is_active ? 'Aktif' : 'Tersembunyi'}
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-zinc-300">
+                  #${l.sort_order || 1}
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 truncate mt-0.5">${l.subtitle} · <span class="text-zinc-500">${l.url}</span></p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 ml-auto">
+            <button onclick="window.app.openLinkModal('${l.id}')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-200" title="Edit">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+            </button>
+            <button onclick="window.app.deleteLinkItem('${l.id}')" class="p-2 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-300" title="Hapus">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      // Daftar Kelola Produk (Tab 4)
+      const adminProdsEl = document.getElementById("admin-products-list");
+      const sortedProds = [...state.products].sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      adminProdsEl.innerHTML = sortedProds.map(pr => `
+        <div class="glass-panel rounded-2xl p-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <img src="${pr.thumbnail_url}" class="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" alt="" />
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-300">${pr.category}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${pr.is_active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-zinc-700 text-zinc-400'}">
+                  ${pr.is_active ? 'Aktif' : 'Nonaktif'}
+                </span>
+              </div>
+              <h4 class="text-sm font-bold text-white truncate mt-0.5">${pr.title}</h4>
+              <p class="text-xs text-zinc-400 mt-0.5">
+                <span class="line-through text-zinc-500 mr-1">${formatRupiah(pr.original_price)}</span>
+                <span class="font-bold text-white">${formatRupiah(pr.promo_price)}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 ml-auto">
+            <button onclick="window.app.openProductModal('${pr.id}')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-200" title="Edit Produk">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+            </button>
+            <button onclick="window.app.deleteProductItem('${pr.id}')" class="p-2 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-300" title="Hapus Produk">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      // Daftar Kelola Media Sosial (Tab 5)
+      const adminSocialsEl = document.getElementById("admin-socials-list");
+      const sortedSocials = [...state.socials].sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      adminSocialsEl.innerHTML = sortedSocials.map(soc => `
+        <div class="glass-panel rounded-2xl p-4 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden text-white shrink-0">
+              ${renderIconVisual(soc.icon_name || 'instagram', soc.custom_icon_url, 'w-5 h-5', 'w-full h-full object-cover')}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm font-bold text-white truncate">${soc.platform}</h4>
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${soc.is_active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-zinc-700 text-zinc-400'}">
+                  ${soc.is_active ? 'Aktif' : 'Nonaktif'}
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 truncate mt-0.5">${soc.handle} · <span class="text-zinc-500">${soc.click_count || 0} klik</span></p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="window.app.openSocialModal('${soc.id}')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-200" title="Edit">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+            </button>
+            <button onclick="window.app.deleteSocialItem('${soc.id}')" class="p-2 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-300" title="Hapus">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      // Daftar Kelola Kontak Lainnya (Tab 6)
+      const adminContactsEl = document.getElementById("admin-contacts-list");
+      const sortedContacts = [...state.contacts].sort((a, b) => (a.sort_order || 1) - (b.sort_order || 1));
+      adminContactsEl.innerHTML = sortedContacts.map(cnt => `
+        <div class="glass-panel rounded-2xl p-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center overflow-hidden text-indigo-300 shrink-0">
+              ${renderIconVisual(cnt.icon_name || 'mail', cnt.custom_icon_url, 'w-5 h-5', 'w-full h-full object-cover')}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm font-bold text-white truncate">${cnt.label}</h4>
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${cnt.is_active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-zinc-700 text-zinc-400'}">
+                  ${cnt.is_active ? 'Aktif' : 'Nonaktif'}
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-zinc-300">
+                  ${cnt.click_count || 0} interaksi
+                </span>
+              </div>
+              <p class="text-xs text-zinc-300 truncate mt-0.5">${cnt.contact_value} <span class="text-zinc-500">(${cnt.action_url})</span></p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 ml-auto">
+            <button onclick="window.app.openContactModal('${cnt.id}')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-200" title="Edit">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+            </button>
+            <button onclick="window.app.deleteContactItem('${cnt.id}')" class="p-2 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-300" title="Hapus">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      renderPhonePreview();
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // CONTROLLER & AKSI INTERAKTIF
+    // ==========================================
+    window.app = {
+      // 0. Sistem Popup Konfirmasi Sebelum Hapus / Reset
+      requestConfirm({ title, message, confirmText = "Ya, Hapus", onConfirm }) {
+        document.getElementById("confirm-modal-title").textContent = title || "Konfirmasi Tindakan";
+        document.getElementById("confirm-modal-message").textContent = message || "Apakah Anda yakin ingin melanjutkan?";
+        document.getElementById("confirm-modal-btn").textContent = confirmText;
+        state.pendingConfirmCallback = onConfirm;
+
+        const modal = document.getElementById("modal-confirm-dialog");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        lucide.createIcons();
+      },
+
+      closeConfirmModal() {
+        const modal = document.getElementById("modal-confirm-dialog");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        state.pendingConfirmCallback = null;
+      },
+
+      async executeConfirmedAction() {
+        const callback = state.pendingConfirmCallback;
+        this.closeConfirmModal();
+        if (typeof callback === "function") {
+          await callback();
+        }
+      },
+
+      // Helper Pratinjau & Reset Ikon Kustom pada Modal
+      syncCustomIconPreview(type, url) {
+        const cleanUrl = (url || "").trim();
+        const prefix = type === "link" ? "link" : type === "social" ? "soc" : "cnt";
+        const imgEl = document.getElementById(`preview-${prefix}-icon-img`);
+        const phEl = document.getElementById(`preview-${prefix}-icon-placeholder`);
+        if (!imgEl || !phEl) return;
+
+        if (cleanUrl) {
+          imgEl.src = cleanUrl;
+          imgEl.classList.remove("hidden");
+          phEl.classList.add("hidden");
+        } else {
+          imgEl.src = "";
+          imgEl.classList.add("hidden");
+          phEl.classList.remove("hidden");
+        }
+      },
+
+      clearCustomIcon(type) {
+        const prefix = type === "link" ? "link" : type === "social" ? "soc" : "cnt";
+        const inpEl = document.getElementById(`${prefix}-custom-icon`);
+        if (inpEl) inpEl.value = "";
+        this.syncCustomIconPreview(type, "");
+        showToast("Ikon dikembalikan ke ikon bawaan");
+      },
+
+      // 1. Klik Tautan, Sosial Media, & Kontak
+      async recordLinkClick(id) {
+        const item = state.links.find(l => l.id === id);
+        if (!item) return;
+        item.click_count = (Number(item.click_count) || 0) + 1;
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          await supabase.from("biolink_links").update({ click_count: item.click_count }).eq("id", id);
+        }
+      },
+
+      async recordSocialClick(id) {
+        const item = state.socials.find(s => s.id === id);
+        if (!item) return;
+        item.click_count = (Number(item.click_count) || 0) + 1;
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          await supabase.from("biolink_socials").update({ click_count: item.click_count }).eq("id", id);
+        }
+      },
+
+      async recordContactClick(id) {
+        const item = state.contacts.find(c => c.id === id);
+        if (!item) return;
+        item.click_count = (Number(item.click_count) || 0) + 1;
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          await supabase.from("biolink_contacts").update({ click_count: item.click_count }).eq("id", id);
+        }
+      },
+
+      copyContactValue(id, value) {
+        copyTextToClipboard(value);
+        this.recordContactClick(id);
+      },
+
+      // 2. Upload File Gambar (Foto Profil, Background, Produk, atau Ikon Kustom)
+      async handleImageUpload(event, targetType) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        showToast("Memproses & mengoptimalkan gambar...");
+
+        try {
+          const isIconUpload = targetType.endsWith("-icon");
+          const maxWidth = targetType === "background" ? 1600 : isIconUpload ? 256 : 500;
+          const { dataUrl, blob } = await compressImageFile(file, maxWidth, 0.85);
+          let finalImageUrl = dataUrl;
+
+          // Jika sudah terhubung ke Supabase, unggah ke Supabase Storage bucket 'biolink-media'
+          if (!IS_PREVIEW && supabase && blob) {
+            const fileName = `${targetType}-${Date.now()}.jpg`;
+            const filePath = `${targetType}s/${fileName}`;
+
+            const { error: uploadErr } = await supabase.storage
+              .from(STORAGE_BUCKET)
+              .upload(filePath, blob, {
+                contentType: "image/jpeg",
+                upsert: true
+              });
+
+            if (!uploadErr) {
+              const { data: pubUrlData } = supabase.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(filePath);
+
+              if (pubUrlData?.publicUrl) {
+                finalImageUrl = pubUrlData.publicUrl;
+              }
+            }
+          }
+
+          if (targetType === "avatar") {
+            document.getElementById("inp-avatar-url").value = finalImageUrl;
+            document.getElementById("preview-avatar-img").src = finalImageUrl;
+            document.getElementById("avatar-upload-status").classList.remove("hidden");
+            showToast("Foto profil berhasil diunggah! Klik Simpan Perubahan.");
+          } else if (targetType === "background") {
+            document.getElementById("inp-bg-url").value = finalImageUrl;
+            document.getElementById("preview-bg-img").src = finalImageUrl;
+            document.getElementById("bg-upload-status").classList.remove("hidden");
+            showToast("Gambar background siap! Klik Simpan Perubahan.");
+          } else if (targetType === "product") {
+            document.getElementById("prod-thumb").value = finalImageUrl;
+            showToast("Thumbnail produk berhasil dimuat!");
+          } else if (targetType === "link-icon") {
+            document.getElementById("link-custom-icon").value = finalImageUrl;
+            this.syncCustomIconPreview("link", finalImageUrl);
+            showToast("Ikon tautan berhasil diunggah!");
+          } else if (targetType === "social-icon") {
+            document.getElementById("soc-custom-icon").value = finalImageUrl;
+            this.syncCustomIconPreview("social", finalImageUrl);
+            showToast("Ikon media sosial berhasil diunggah!");
+          } else if (targetType === "contact-icon") {
+            document.getElementById("cnt-custom-icon").value = finalImageUrl;
+            this.syncCustomIconPreview("contact", finalImageUrl);
+            showToast("Ikon kontak berhasil diunggah!");
+          }
+        } catch (err) {
+          showToast("Gagal memproses file gambar.");
+        }
+      },
+
+      // 3. Buka Modal Detail Produk & Catat Klik
+      async openProductDetailModal(id) {
+        const prod = state.products.find(p => p.id === id);
+        if (!prod) return;
+
+        prod.click_count = (Number(prod.click_count) || 0) + 1;
+        renderAdminDashboard();
+
+        document.getElementById("detail-modal-thumb").src = prod.thumbnail_url;
+        document.getElementById("detail-modal-category").textContent = prod.category;
+        document.getElementById("detail-modal-title").textContent = prod.title;
+        document.getElementById("detail-modal-desc").textContent = prod.full_desc || prod.short_desc;
+        document.getElementById("detail-modal-orig-price").textContent = Number(prod.original_price) > 0 ? formatRupiah(prod.original_price) : "";
+        document.getElementById("detail-modal-promo-price").textContent = formatRupiah(prod.promo_price);
+        document.getElementById("detail-modal-cta-link").href = prod.target_url;
+
+        const modal = document.getElementById("modal-product-detail");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        lucide.createIcons();
+
+        if (!IS_PREVIEW && supabase) {
+          await supabase.from("biolink_products").update({ click_count: prod.click_count }).eq("id", id);
+        }
+      },
+
+      closeProductDetailModal() {
+        const modal = document.getElementById("modal-product-detail");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      },
+
+      // 4. Autentikasi Admin Tunggal (Supabase Auth)
+      openAdminAuthModal() {
+        if (state.isAdminLoggedIn) {
+          this.toggleAdminView(true);
+          return;
+        }
+        const modal = document.getElementById("modal-admin-auth");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      },
+
+      closeAdminAuthModal() {
+        const modal = document.getElementById("modal-admin-auth");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      },
+
+      async handleAdminLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById("auth-email").value.trim();
+        const password = document.getElementById("auth-password").value;
+
+        if (IS_PREVIEW || !supabase) {
+          state.isAdminLoggedIn = true;
+          this.closeAdminAuthModal();
+          this.toggleAdminView(true);
+          showToast("Login Admin berhasil (Mode Pratinjau)");
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          showToast("Gagal Login: " + error.message);
+          return;
+        }
+
+        if (data?.user) {
+          state.isAdminLoggedIn = true;
+          this.closeAdminAuthModal();
+          this.toggleAdminView(true);
+          showToast("Selamat datang kembali, Admin!");
+        }
+      },
+
+      async handleLogout() {
+        if (!IS_PREVIEW && supabase) {
+          await supabase.auth.signOut();
+        }
+        state.isAdminLoggedIn = false;
+        this.toggleAdminView(false);
+        document.getElementById("btn-toggle-view").classList.add("hidden");
+        showToast("Sesi Admin telah keluar");
+      },
+
+      // 5. Beralih Antara Halaman Publik & Dashboard Admin
+      toggleAdminView(forceAdmin) {
+        state.isAdminViewOpen = typeof forceAdmin === "boolean" ? forceAdmin : !state.isAdminViewOpen;
+        const pubView = document.getElementById("public-biolink-view");
+        const adminView = document.getElementById("admin-dashboard-view");
+        const toggleBtn = document.getElementById("btn-toggle-view");
+        const toggleTxt = document.getElementById("btn-toggle-view-text");
+
+        if (state.isAdminLoggedIn) {
+          toggleBtn.classList.remove("hidden");
+          toggleBtn.classList.add("inline-flex");
+        }
+
+        if (state.isAdminViewOpen) {
+          pubView.classList.add("hidden");
+          adminView.classList.remove("hidden");
+          toggleTxt.textContent = "Lihat Biolink Publik";
+        } else {
+          adminView.classList.add("hidden");
+          pubView.classList.remove("hidden");
+          toggleTxt.textContent = "Dashboard Admin";
+        }
+        renderPhonePreview();
+        lucide.createIcons();
+      },
+
+      switchAdminTab(tabName) {
+        state.activeTab = tabName;
+        document.querySelectorAll(".admin-tab-pane").forEach(el => el.classList.add("hidden"));
+        document.getElementById(`admin-tab-${tabName}`).classList.remove("hidden");
+
+        document.querySelectorAll(".admin-nav-btn").forEach(btn => {
+          const isMatch = btn.getAttribute("data-tab") === tabName;
+          if (isMatch) {
+            btn.classList.add("bg-white", "text-zinc-950");
+            btn.classList.remove("text-zinc-300", "hover:bg-white/10");
+          } else {
+            btn.classList.remove("bg-white", "text-zinc-950");
+            btn.classList.add("text-zinc-300");
+          }
+        });
+      },
+
+      // 6. Simpan Profil & Tampilan
+      setPresetBg(url) {
+        document.getElementById("inp-bg-url").value = url;
+        document.getElementById("preview-bg-img").src = url;
+      },
+
+      async saveProfile(e) {
+        e.preventDefault();
+        const updated = {
+          ...state.profile,
+          full_name: document.getElementById("inp-full-name").value.trim(),
+          role_tagline: document.getElementById("inp-role-tagline").value.trim(),
+          bio_text: document.getElementById("inp-bio-text").value.trim(),
+          avatar_url: document.getElementById("inp-avatar-url").value.trim(),
+          bg_image_url: document.getElementById("inp-bg-url").value.trim(),
+          is_open_collab: document.getElementById("inp-open-collab").value === "true",
+          status_text: document.getElementById("inp-status-text").value.trim(),
+          cta_hint_text: document.getElementById("inp-cta-hint").value.trim(),
+          product_section_title: document.getElementById("inp-product-section-title").value.trim(),
+          social_section_title: document.getElementById("inp-social-section-title").value.trim(),
+          contact_section_title: document.getElementById("inp-contact-section-title").value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        state.profile = updated;
+        document.getElementById("avatar-upload-status").classList.add("hidden");
+        document.getElementById("bg-upload-status").classList.add("hidden");
+        renderPublicBiolink();
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          const { error } = await supabase
+            .from("biolink_profile")
+            .upsert([updated], { onConflict: "id" });
+          if (error) {
+            showToast("Gagal menyimpan ke Supabase: " + error.message);
+            return;
+          }
+        }
+        showToast("Profil & tampilan berhasil diperbarui!");
+      },
+
+      // 7. CRUD Tautan Cepat
+      openLinkModal(id = null) {
+        const modal = document.getElementById("modal-link-form");
+        const heading = document.getElementById("modal-link-heading");
+
+        if (id) {
+          const item = state.links.find(l => l.id === id);
+          if (!item) return;
+          heading.textContent = "Edit Kartu Tautan";
+          document.getElementById("link-id").value = item.id;
+          document.getElementById("link-title").value = item.title;
+          document.getElementById("link-subtitle").value = item.subtitle;
+          document.getElementById("link-url").value = item.url;
+          document.getElementById("link-style").value = item.card_style || "dark-glass";
+          document.getElementById("link-icon").value = item.icon_name || "sparkles";
+          document.getElementById("link-custom-icon").value = item.custom_icon_url || "";
+          this.syncCustomIconPreview("link", item.custom_icon_url || "");
+          document.getElementById("link-badge").value = item.badge_text || "";
+          document.getElementById("link-sort").value = item.sort_order || 1;
+          document.getElementById("link-active").checked = Boolean(item.is_active);
+        } else {
+          heading.textContent = "Tambah Tautan Baru";
+          document.getElementById("link-id").value = "";
+          document.getElementById("link-title").value = "";
+          document.getElementById("link-subtitle").value = "";
+          document.getElementById("link-url").value = "https://";
+          document.getElementById("link-style").value = "dark-glass";
+          document.getElementById("link-icon").value = "sparkles";
+          document.getElementById("link-custom-icon").value = "";
+          this.syncCustomIconPreview("link", "");
+          document.getElementById("link-badge").value = "";
+          document.getElementById("link-sort").value = state.links.length + 1;
+          document.getElementById("link-active").checked = true;
+        }
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      },
+
+      closeLinkModal() {
+        const modal = document.getElementById("modal-link-form");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      },
+
+      async saveLinkItem(e) {
+        e.preventDefault();
+        const existingId = document.getElementById("link-id").value;
+        const payload = {
+          id: existingId || crypto.randomUUID(),
+          title: document.getElementById("link-title").value.trim(),
+          subtitle: document.getElementById("link-subtitle").value.trim(),
+          url: document.getElementById("link-url").value.trim(),
+          card_style: document.getElementById("link-style").value,
+          icon_name: document.getElementById("link-icon").value,
+          custom_icon_url: document.getElementById("link-custom-icon").value.trim(),
+          badge_text: document.getElementById("link-badge").value.trim(),
+          badge_color: "green",
+          sort_order: Number(document.getElementById("link-sort").value) || 1,
+          is_active: document.getElementById("link-active").checked
+        };
+
+        if (existingId) {
+          const idx = state.links.findIndex(l => l.id === existingId);
+          if (idx > -1) {
+            payload.click_count = state.links[idx].click_count || 0;
+            state.links[idx] = payload;
+          }
+        } else {
+          payload.click_count = 0;
+          state.links.push(payload);
+        }
+
+        this.closeLinkModal();
+        renderPublicBiolink();
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          const { error } = await supabase.from("biolink_links").upsert([payload], { onConflict: "id" });
+          if (error) {
+            showToast("Gagal menyimpan tautan: " + error.message);
+            return;
+          }
+        }
+        showToast("Kartu tautan berhasil disimpan!");
+      },
+
+      deleteLinkItem(id) {
+        const item = state.links.find(l => l.id === id);
+        if (!item) return;
+
+        this.requestConfirm({
+          title: "Hapus Kartu Tautan?",
+          message: `Apakah Anda yakin ingin menghapus tautan "${item.title}"? Tindakan ini tidak dapat dibatalkan.`,
+          confirmText: "Ya, Hapus Tautan",
+          onConfirm: async () => {
+            state.links = state.links.filter(l => l.id !== id);
+            renderPublicBiolink();
+            renderAdminDashboard();
+
+            if (!IS_PREVIEW && supabase) {
+              await supabase.from("biolink_links").delete().eq("id", id);
+            }
+            showToast("Tautan telah dihapus");
+          }
+        });
+      },
+
+      // 8. CRUD Produk Digital
+      openProductModal(id = null) {
+        const modal = document.getElementById("modal-product-form");
+        const heading = document.getElementById("modal-product-heading");
+
+        if (id) {
+          const prod = state.products.find(p => p.id === id);
+          if (!prod) return;
+          heading.textContent = "Edit Produk AI";
+          document.getElementById("prod-id").value = prod.id;
+          document.getElementById("prod-category").value = prod.category;
+          document.getElementById("prod-sort").value = prod.sort_order || 1;
+          document.getElementById("prod-title").value = prod.title;
+          document.getElementById("prod-short-desc").value = prod.short_desc;
+          document.getElementById("prod-full-desc").value = prod.full_desc || prod.short_desc;
+          document.getElementById("prod-thumb").value = prod.thumbnail_url;
+          document.getElementById("prod-orig-price").value = prod.original_price;
+          document.getElementById("prod-promo-price").value = prod.promo_price;
+          document.getElementById("prod-cta-text").value = prod.cta_text || "Lihat Detail";
+          document.getElementById("prod-target-url").value = prod.target_url;
+          document.getElementById("prod-active").checked = Boolean(prod.is_active);
+        } else {
+          heading.textContent = "Tambah Produk AI Baru";
+          document.getElementById("prod-id").value = "";
+          document.getElementById("prod-category").value = "";
+          document.getElementById("prod-sort").value = state.products.length + 1;
+          document.getElementById("prod-title").value = "";
+          document.getElementById("prod-short-desc").value = "";
+          document.getElementById("prod-full-desc").value = "";
+          document.getElementById("prod-thumb").value = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300&h=300&fit=crop";
+          document.getElementById("prod-orig-price").value = 299000;
+          document.getElementById("prod-promo-price").value = 99000;
+          document.getElementById("prod-cta-text").value = "Lihat Detail";
+          document.getElementById("prod-target-url").value = "https://";
+          document.getElementById("prod-active").checked = true;
+        }
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      },
+
+      closeProductModal() {
+        const modal = document.getElementById("modal-product-form");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      },
+
+      async saveProductItem(e) {
+        e.preventDefault();
+        const existingId = document.getElementById("prod-id").value;
+        const payload = {
+          id: existingId || crypto.randomUUID(),
+          category: document.getElementById("prod-category").value.trim().toUpperCase(),
+          sort_order: Number(document.getElementById("prod-sort").value) || 1,
+          title: document.getElementById("prod-title").value.trim(),
+          short_desc: document.getElementById("prod-short-desc").value.trim(),
+          full_desc: document.getElementById("prod-full-desc").value.trim(),
+          thumbnail_url: document.getElementById("prod-thumb").value.trim(),
+          original_price: Number(document.getElementById("prod-orig-price").value) || 0,
+          promo_price: Number(document.getElementById("prod-promo-price").value) || 0,
+          cta_text: document.getElementById("prod-cta-text").value.trim() || "Lihat Detail",
+          target_url: document.getElementById("prod-target-url").value.trim(),
+          is_active: document.getElementById("prod-active").checked
+        };
+
+        if (existingId) {
+          const idx = state.products.findIndex(p => p.id === existingId);
+          if (idx > -1) {
+            payload.click_count = state.products[idx].click_count || 0;
+            state.products[idx] = payload;
+          }
+        } else {
+          payload.click_count = 0;
+          state.products.push(payload);
+        }
+
+        this.closeProductModal();
+        renderPublicBiolink();
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          const { error } = await supabase.from("biolink_products").upsert([payload], { onConflict: "id" });
+          if (error) {
+            showToast("Gagal menyimpan produk: " + error.message);
+            return;
+          }
+        }
+        showToast("Produk digital berhasil disimpan!");
+      },
+
+      deleteProductItem(id) {
+        const prod = state.products.find(p => p.id === id);
+        if (!prod) return;
+
+        this.requestConfirm({
+          title: "Hapus Produk Digital?",
+          message: `Apakah Anda yakin ingin menghapus produk "${prod.title}" dari katalog Biolink Anda?`,
+          confirmText: "Ya, Hapus Produk",
+          onConfirm: async () => {
+            state.products = state.products.filter(p => p.id !== id);
+            renderPublicBiolink();
+            renderAdminDashboard();
+
+            if (!IS_PREVIEW && supabase) {
+              await supabase.from("biolink_products").delete().eq("id", id);
+            }
+            showToast("Produk telah dihapus");
+          }
+        });
+      },
+
+      // 9. CRUD Media Sosial
+      openSocialModal(id = null) {
+        const modal = document.getElementById("modal-social-form");
+        const heading = document.getElementById("modal-social-heading");
+
+        if (id) {
+          const soc = state.socials.find(s => s.id === id);
+          if (!soc) return;
+          heading.textContent = "Edit Media Sosial";
+          document.getElementById("soc-id").value = soc.id;
+          document.getElementById("soc-platform").value = soc.platform;
+          document.getElementById("soc-handle").value = soc.handle;
+          document.getElementById("soc-url").value = soc.url;
+          document.getElementById("soc-icon").value = soc.icon_name || "instagram";
+          document.getElementById("soc-custom-icon").value = soc.custom_icon_url || "";
+          this.syncCustomIconPreview("social", soc.custom_icon_url || "");
+          document.getElementById("soc-sort").value = soc.sort_order || 1;
+          document.getElementById("soc-active").checked = Boolean(soc.is_active);
+        } else {
+          heading.textContent = "Tambah Media Sosial";
+          document.getElementById("soc-id").value = "";
+          document.getElementById("soc-platform").value = "";
+          document.getElementById("soc-handle").value = "@";
+          document.getElementById("soc-url").value = "https://";
+          document.getElementById("soc-icon").value = "instagram";
+          document.getElementById("soc-custom-icon").value = "";
+          this.syncCustomIconPreview("social", "");
+          document.getElementById("soc-sort").value = state.socials.length + 1;
+          document.getElementById("soc-active").checked = true;
+        }
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      },
+
+      closeSocialModal() {
+        const modal = document.getElementById("modal-social-form");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      },
+
+      async saveSocialItem(e) {
+        e.preventDefault();
+        const existingId = document.getElementById("soc-id").value;
+        const payload = {
+          id: existingId || crypto.randomUUID(),
+          platform: document.getElementById("soc-platform").value.trim(),
+          handle: document.getElementById("soc-handle").value.trim(),
+          url: document.getElementById("soc-url").value.trim(),
+          icon_name: document.getElementById("soc-icon").value,
+          custom_icon_url: document.getElementById("soc-custom-icon").value.trim(),
+          sort_order: Number(document.getElementById("soc-sort").value) || 1,
+          is_active: document.getElementById("soc-active").checked
+        };
+
+        if (existingId) {
+          const idx = state.socials.findIndex(s => s.id === existingId);
+          if (idx > -1) {
+            payload.click_count = state.socials[idx].click_count || 0;
+            state.socials[idx] = payload;
+          }
+        } else {
+          payload.click_count = 0;
+          state.socials.push(payload);
+        }
+
+        this.closeSocialModal();
+        renderPublicBiolink();
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          const { error } = await supabase.from("biolink_socials").upsert([payload], { onConflict: "id" });
+          if (error) {
+            showToast("Gagal menyimpan media sosial: " + error.message);
+            return;
+          }
+        }
+        showToast("Akun media sosial berhasil disimpan!");
+      },
+
+      deleteSocialItem(id) {
+        const soc = state.socials.find(s => s.id === id);
+        if (!soc) return;
+
+        this.requestConfirm({
+          title: "Hapus Media Sosial?",
+          message: `Apakah Anda yakin ingin menghapus "${soc.platform} (${soc.handle})" dari daftar media sosial Anda?`,
+          confirmText: "Ya, Hapus Sosmed",
+          onConfirm: async () => {
+            state.socials = state.socials.filter(s => s.id !== id);
+            renderPublicBiolink();
+            renderAdminDashboard();
+
+            if (!IS_PREVIEW && supabase) {
+              await supabase.from("biolink_socials").delete().eq("id", id);
+            }
+            showToast("Media sosial telah dihapus");
+          }
+        });
+      },
+
+      // 10. CRUD Kontak Lainnya
+      openContactModal(id = null) {
+        const modal = document.getElementById("modal-contact-form");
+        const heading = document.getElementById("modal-contact-heading");
+
+        if (id) {
+          const cnt = state.contacts.find(c => c.id === id);
+          if (!cnt) return;
+          heading.textContent = "Edit Kontak";
+          document.getElementById("cnt-id").value = cnt.id;
+          document.getElementById("cnt-label").value = cnt.label;
+          document.getElementById("cnt-value").value = cnt.contact_value;
+          document.getElementById("cnt-url").value = cnt.action_url;
+          document.getElementById("cnt-icon").value = cnt.icon_name || "mail";
+          document.getElementById("cnt-custom-icon").value = cnt.custom_icon_url || "";
+          this.syncCustomIconPreview("contact", cnt.custom_icon_url || "");
+          document.getElementById("cnt-sort").value = cnt.sort_order || 1;
+          document.getElementById("cnt-active").checked = Boolean(cnt.is_active);
+        } else {
+          heading.textContent = "Tambah Kontak Baru";
+          document.getElementById("cnt-id").value = "";
+          document.getElementById("cnt-label").value = "";
+          document.getElementById("cnt-value").value = "";
+          document.getElementById("cnt-url").value = "https://";
+          document.getElementById("cnt-icon").value = "mail";
+          document.getElementById("cnt-custom-icon").value = "";
+          this.syncCustomIconPreview("contact", "");
+          document.getElementById("cnt-sort").value = state.contacts.length + 1;
+          document.getElementById("cnt-active").checked = true;
+        }
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      },
+
+      closeContactModal() {
+        const modal = document.getElementById("modal-contact-form");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      },
+
+      async saveContactItem(e) {
+        e.preventDefault();
+        const existingId = document.getElementById("cnt-id").value;
+        const payload = {
+          id: existingId || crypto.randomUUID(),
+          label: document.getElementById("cnt-label").value.trim(),
+          contact_value: document.getElementById("cnt-value").value.trim(),
+          action_url: document.getElementById("cnt-url").value.trim(),
+          icon_name: document.getElementById("cnt-icon").value,
+          custom_icon_url: document.getElementById("cnt-custom-icon").value.trim(),
+          sort_order: Number(document.getElementById("cnt-sort").value) || 1,
+          is_active: document.getElementById("cnt-active").checked
+        };
+
+        if (existingId) {
+          const idx = state.contacts.findIndex(c => c.id === existingId);
+          if (idx > -1) {
+            payload.click_count = state.contacts[idx].click_count || 0;
+            state.contacts[idx] = payload;
+          }
+        } else {
+          payload.click_count = 0;
+          state.contacts.push(payload);
+        }
+
+        this.closeContactModal();
+        renderPublicBiolink();
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          const { error } = await supabase.from("biolink_contacts").upsert([payload], { onConflict: "id" });
+          if (error) {
+            showToast("Gagal menyimpan kontak: " + error.message);
+            return;
+          }
+        }
+        showToast("Kontak berhasil disimpan!");
+      },
+
+      deleteContactItem(id) {
+        const cnt = state.contacts.find(c => c.id === id);
+        if (!cnt) return;
+
+        this.requestConfirm({
+          title: "Hapus Kontak Ini?",
+          message: `Apakah Anda yakin ingin menghapus saluran kontak "${cnt.label} (${cnt.contact_value})"?`,
+          confirmText: "Ya, Hapus Kontak",
+          onConfirm: async () => {
+            state.contacts = state.contacts.filter(c => c.id !== id);
+            renderPublicBiolink();
+            renderAdminDashboard();
+
+            if (!IS_PREVIEW && supabase) {
+              await supabase.from("biolink_contacts").delete().eq("id", id);
+            }
+            showToast("Kontak telah dihapus");
+          }
+        });
+      },
+
+      // 11. Reset Analitik Klik (Dengan Popup Konfirmasi)
+      confirmResetAnalytics() {
+        this.requestConfirm({
+          title: "Reset Seluruh Statistik Klik?",
+          message: "Seluruh angka klik pada Tautan Cepat, Produk AI, Media Sosial, dan Kontak Lainnya akan dikembalikan ke 0. Tindakan ini tidak dapat dibatalkan.",
+          confirmText: "Ya, Reset ke 0",
+          onConfirm: async () => {
+            await this.resetAnalytics();
+          }
+        });
+      },
+
+      async resetAnalytics() {
+        state.links.forEach(l => (l.click_count = 0));
+        state.products.forEach(p => (p.click_count = 0));
+        state.socials.forEach(s => (s.click_count = 0));
+        state.contacts.forEach(c => (c.click_count = 0));
+        renderAdminDashboard();
+
+        if (!IS_PREVIEW && supabase) {
+          await Promise.all([
+            supabase.from("biolink_links").update({ click_count: 0 }).neq("id", "00000000-0000-0000-0000-000000000000"),
+            supabase.from("biolink_products").update({ click_count: 0 }).neq("id", "00000000-0000-0000-0000-000000000000"),
+            supabase.from("biolink_socials").update({ click_count: 0 }).neq("id", "00000000-0000-0000-0000-000000000000"),
+            supabase.from("biolink_contacts").update({ click_count: 0 }).neq("id", "00000000-0000-0000-0000-000000000000")
+          ]);
+        }
+        showToast("Seluruh statistik klik berhasil di-reset ke 0");
+      }
+    };
+
+    // ==========================================
+    // IMPLEMENTASI PWA 1 FILE: SERVICE WORKER BLOB
+    // ==========================================
+    function registerDynamicServiceWorker() {
+      if ("serviceWorker" in navigator) {
+        const swCode = `
+          const CACHE_NAME = 'biolink-ai-v4';
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(self.clients.claim());
+          });
+          self.addEventListener('fetch', (e) => {
+            if (e.request.method !== 'GET') return;
+            e.respondWith(
+              fetch(e.request).catch(() => caches.match(e.request))
+            );
+          });
+        `;
+        try {
+          const blob = new Blob([swCode], { type: "application/javascript" });
+          const swUrl = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(swUrl).catch(() => {});
+        } catch (err) {
+          // Abaikan jika diblokir oleh sandbox iframe
+        }
+      }
+    }
+
+    // INISIALISASI SAAT HALAMAN DIMUAT
+    window.addEventListener("DOMContentLoaded", async () => {
+      registerDynamicServiceWorker();
+      await autoSetupDatabase();
+
+      // Cek sesi Supabase Auth jika bukan mode preview
+      if (!IS_PREVIEW && supabase) {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session?.user) {
+          state.isAdminLoggedIn = true;
+          const toggleBtn = document.getElementById("btn-toggle-view");
+          toggleBtn.classList.remove("hidden");
+          toggleBtn.classList.add("inline-flex");
+        }
+      }
+
+      await loadAllData();
+    });
+  </script>
+</body>
+</html>
